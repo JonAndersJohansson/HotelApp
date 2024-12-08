@@ -44,10 +44,7 @@ namespace HotelApp.UI.Menus
                 PhoneNumber = "070628362"
             };
 
-            var booking1 = new Booking
             {
-                BookingId = 1231,
-                CustomerInBooking = jon
             };
 
             var roomBookings = new List<Booking> { booking1 };
@@ -69,8 +66,7 @@ namespace HotelApp.UI.Menus
             switch (_displayList.BrowseAList(listRoomMenu, false, Graphics.MakeHeader("Rum ↑/↓"), true))
             {
                 case 0:
-                    var selectedIndex = _displayList.BrowseAList(exempelRum, false, Graphics.MakeHeader("alla rum:"), false);
-
+                    
                     Room selectedRoom = exempelRum[selectedIndex];
 
                     Console.Clear();
@@ -81,7 +77,6 @@ namespace HotelApp.UI.Menus
                     Console.ReadKey();
 
                     exempelRum.RemoveAt(selectedIndex);
-                    Console.WriteLine($"\nFöljande rum är borttaget: {selectedRoom.RoomNumber}");
                     Console.ReadKey();
                     break;
                 case 1:

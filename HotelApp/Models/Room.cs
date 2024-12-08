@@ -9,6 +9,7 @@ namespace HotelApp.Models
     }
     public class Room
     {
+        public int RoomId { get; set; }
         public short RoomNumber { get; set; }
         public BedSize RoomType { get; set; }
         public float RoomSizeInSquareMeters { get; set; }

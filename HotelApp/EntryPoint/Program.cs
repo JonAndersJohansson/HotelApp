@@ -26,7 +26,6 @@ namespace HotelApp.EntryPoint
             var customerMenu = myContainer.Resolve<CustomerMenu>();
             var roomMenu = myContainer.Resolve<RoomMenu>();
             var invoiceMenu = myContainer.Resolve<InvoiceMenu>();
-            var bookingService = myContainer.Resolve<BookingService>();
             //var inputHandler = myContainer.Resolve<IInputHandler>();
             //var create = myContainer.Resolve<Create>();
             //var read = myContainer.Resolve<Read>();

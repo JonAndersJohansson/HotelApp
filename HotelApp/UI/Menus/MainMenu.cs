@@ -16,8 +16,8 @@ namespace HotelApp.UI.Menus
     {
         private readonly DisplayList _displayList;
         private readonly Lazy<ServiceMenu> _serviceMenu;
-        private readonly BookingService _bookingService;
-        public MainMenu(DisplayList displayList, Lazy<ServiceMenu> serviceMenu, BookingService bookingService)
+        private readonly string _mainMenuHeader = "Hej";
+        public MainMenu(DisplayList displayList, Lazy<ServiceMenu> serviceMenu)
         {
             _displayList = displayList;
             _serviceMenu = serviceMenu;
