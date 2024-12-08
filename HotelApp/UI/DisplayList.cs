@@ -72,11 +72,11 @@ namespace HotelApp.UI
 
         private void DisplayItems<T>(List<T> lista, int selectedIndex)
         {
-            const int padding = 2; // Antal tomma utrymmen från vänster
+            const int padding = 2; 
 
             for (int i = 0; i < lista.Count; i++)
             {
-                Console.Write(new string(' ', padding)); // Lägg till marginal
+                Console.Write(new string(' ', padding)); 
 
                 if (i == selectedIndex)
                 {
@@ -106,8 +106,8 @@ namespace HotelApp.UI
 
         private void ShowBackButton(bool isSelected)
         {
-            const int padding = 2; // Antal tomma utrymmen från vänster
-            Console.Write(new string(' ', padding)); // Lägg till marginal
+            const int padding = 2;
+            Console.Write(new string(' ', padding));
 
             if (isSelected)
             {
@@ -125,8 +125,8 @@ namespace HotelApp.UI
         }
         private void ShowAbortButton(bool isSelected)
         {
-            const int padding = 2; // Antal tomma utrymmen från vänster
-            Console.Write(new string(' ', padding)); // Lägg till marginal
+            const int padding = 2;
+            Console.Write(new string(' ', padding));
 
             if (isSelected)
             {
