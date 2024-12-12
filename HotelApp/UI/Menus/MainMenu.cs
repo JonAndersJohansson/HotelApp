@@ -1,6 +1,6 @@
 ﻿using HotelApp.Services.BookingService;
 using HotelApp.UI;
-using HotelApp.UX;
+using HotelApp.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +21,6 @@ namespace HotelApp.UI.Menus
         {
             _displayList = displayList;
             _serviceMenu = serviceMenu;
-            _bookingService = bookingService;
         }
 
         public readonly List<string> listMainMenu = new List<string>
@@ -34,7 +33,7 @@ namespace HotelApp.UI.Menus
         /// </summary>
         public void MenuSwitch()
         {
-            switch (_displayList.BrowseAList(listMainMenu, true, Graphics.MakeHeader("huvudmeny ↑/↓"), true))
+            switch (_displayList.BrowseAList(listMainMenu, true, Graphics.GetHeaderAsString("Huvudmeny ↑/↓/↩"), true))
             {
                 case 0:
                     //Sök 

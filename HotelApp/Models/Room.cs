@@ -9,20 +9,18 @@ namespace HotelApp.Models
     }
     public class Room
     {
-        public int RoomId { get; set; }
-        public short RoomNumber { get; set; }
-        public BedSize RoomType { get; set; }
-        public float RoomSizeInSquareMeters { get; set; }
-        public byte MaxPersonsAllowedInRoom { get; set; }
-        public byte NumberOfPossibleExtraBeds { get; set; }
-        public float CostPerNight { get; set; }
-        public List<Booking> ListOfBookingInRoom { get; set; }
-        public bool IsCurrentlyOccupied { get; set; } = false;
+        public required short RoomNumberAsID { get; set; }
+        public required BedSize RoomType { get; set; } = BedSize.Single;
+        public byte NumberOfPossibleExtraBeds { get; set; } = 0;
+        public required decimal CostPerNight { get; set; }
+        public bool IsDisabilityFriendly { get; set; } = false;
+        public string? OtherOrDescription { get; set; }
         public bool IsActive { get; set; } = true;
+        public List<BookingRoom>? ListOfBookingRoomsInRoom { get; set; } = new List<BookingRoom>();
 
         public override string ToString()
         {
-            return $"Room {RoomNumber}: {RoomType}, {CostPerNight}";
+            return $"{RoomNumberAsID} - {RoomType}, Pris: {CostPerNight}, Möjliga extrasängar: {NumberOfPossibleExtraBeds}, AKTIV = {(IsActive ? "Ja" : "Nej")}";
         }
     }
 

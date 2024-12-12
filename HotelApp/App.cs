@@ -1,11 +1,12 @@
-﻿using HotelApp.UI.Menus;
+﻿using HotelApp.Data;
+using HotelApp.UI.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HotelApp.Core
+namespace HotelApp
 {
     public class App
     {
@@ -16,8 +17,6 @@ namespace HotelApp.Core
         }
         public void Run()
         {
-            //Seed
-            //Update ALL bools in models
             _mainMenu.MenuSwitch();
         }
     }

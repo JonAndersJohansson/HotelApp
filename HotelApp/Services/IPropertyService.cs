@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HotelApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace HotelApp.Services
 {
-    public class InvoiceService
+    public interface IPropertyService
     {
+        void PropertySwitch(Room room, bool isNew);
     }
 }

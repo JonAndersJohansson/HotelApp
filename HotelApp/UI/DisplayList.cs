@@ -1,5 +1,5 @@
 ﻿using HotelApp.UI.Menus;
-using HotelApp.UX;
+using HotelApp.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace HotelApp.UI
     public class DisplayList
     {
         private readonly Lazy<MainMenu> _mainMenu;
-        public DisplayList(Lazy<MainMenu> mainMenu)
+        public DisplayList(Lazy<MainMenu> mainMenu )
         {
             _mainMenu = mainMenu;
         }
@@ -70,11 +70,11 @@ namespace HotelApp.UI
             return selectedIndex;
         }
 
-        private void DisplayItems<T>(List<T> lista, int selectedIndex)
+        private void DisplayItems<T>(List<T> genericList, int selectedIndex)
         {
             const int padding = 2; 
 
-            for (int i = 0; i < lista.Count; i++)
+            for (int i = 0; i < genericList.Count; i++)
             {
                 Console.Write(new string(' ', padding)); 
 
@@ -84,22 +84,32 @@ namespace HotelApp.UI
                     Console.Write(">> ");
                     Console.ResetColor();
                 }
-                else if (lista[i].ToString() == "Avsluta")
+                else if (genericList[i].ToString() == "Avsluta")
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
+                }
+                else if (genericList[i].ToString() == "Kontrollera & Spara")
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
                 }
                 else
                 {
                     Console.ResetColor();
                 }
-                if (lista[i].ToString() == "Avsluta")
+                if (genericList[i].ToString() == "Avsluta")
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write($"{lista[i].ToString()}\n");
+                    Console.Write($"{genericList[i].ToString()}\n");
+                    Console.ResetColor();
+                }
+                else if (genericList[i].ToString() == "Kontrollera & Spara")
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write($"{genericList[i].ToString()}\n");
                     Console.ResetColor();
                 }
                 else
-                    Console.Write($"{lista[i].ToString()} \n");
+                    Console.Write($"{genericList[i].ToString()} \n");
                 Console.ResetColor();
             }
         }
@@ -139,7 +149,7 @@ namespace HotelApp.UI
                 Console.ForegroundColor = ConsoleColor.Red;
             }
 
-            Console.WriteLine("Avbryt och återgå till huvudmenyn");
+            Console.WriteLine("Avbryt");
             Console.ResetColor();
         }
 

@@ -1,6 +1,8 @@
 ﻿using Autofac;
-using HotelApp.Core;
+using HotelApp.Data;
+using HotelApp.Services;
 using HotelApp.Services.BookingService;
+using HotelApp.Services.RoomServices;
 using HotelApp.UI;
 using HotelApp.UI.Menus;
 using System;
@@ -39,9 +41,19 @@ namespace HotelApp.DI
             builder.RegisterType<InvoiceMenu>()
                     .AsSelf()
                     .SingleInstance();
-            builder.RegisterType<BookingService>()
+            builder.RegisterType<RoomPropertyService>()
                     .AsSelf()
                     .SingleInstance();
+            builder.RegisterType<RoomService>()
+                    .AsSelf()
+                    .SingleInstance();
+
+
+            builder.RegisterType<DataInitializer>()
+                    .AsSelf();
+            builder.RegisterType<ApplicationDbContext_FAKE>()
+                    .SingleInstance();
+
             //builder.RegisterType<InputHandler>()
             //       .As<IInputHandler>();
             //builder.RegisterType<Create>()

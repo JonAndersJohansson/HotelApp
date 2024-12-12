@@ -1,5 +1,5 @@
 ﻿using HotelApp.UI;
-using HotelApp.UX;
+using HotelApp.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +32,7 @@ namespace HotelApp.UI.Menus
         /// </summary>
         public void MenuSwitch()
         {
-            switch (_displayList.BrowseAList(listBookingMenu, false, Graphics.MakeHeader("bokningar ↑/↓"), true))
+            switch (_displayList.BrowseAList(listBookingMenu, false, Graphics.GetHeaderAsString("Meny Bokningar ↑/↓/↩"), true))
             {
                 case 0:
                     //Visa alla bokningar

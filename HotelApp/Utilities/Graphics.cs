@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HotelApp.UX
+namespace HotelApp.Utilities
 {
     public static class Graphics
     {
@@ -18,15 +18,13 @@ namespace HotelApp.UX
                 "╠═══════════════════════════════════════════════════════════════════════════════════════╣");
             Console.ResetColor();
         }
-        public static string MakeHeader(string textToDisplay)
+        public static string GetHeaderAsString(string textToDisplay)
         {
-            string formattedText = $"{textToDisplay.ToUpper()}";
-
             int totalLength = 87;
-            int padding = totalLength - formattedText.Length;
+            int padding = totalLength - textToDisplay.Length;
             int leftPadding = padding / 2;
             int rightPadding = padding - leftPadding;
-            string centeredText = new string(' ', leftPadding) + formattedText + new string(' ', rightPadding);
+            string centeredText = new string(' ', leftPadding) + textToDisplay + new string(' ', rightPadding);
 
             return $"║{centeredText}║\n╚═══════════════════════════════════════════════════════════════════════════════════════╝";
         }
