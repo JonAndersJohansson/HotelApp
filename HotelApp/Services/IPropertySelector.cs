@@ -1,4 +1,4 @@
-﻿using HotelApp.Models;
+﻿using HotelApp.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace HotelApp.Services
 {
-    public interface IPropertyService
+    public interface IPropertySelector<T>
     {
-        void PropertySwitch(Room room, bool isNew);
+        T PropertySwitch(T entity, params object[] parameters);
     }
 }

@@ -1,7 +1,10 @@
 ﻿using Autofac;
+using HotelApp.Controllers;
 using HotelApp.Data;
 using HotelApp.Services;
 using HotelApp.Services.BookingService;
+using HotelApp.Services.CustomerServices;
+using HotelApp.Services.InvoiceServices;
 using HotelApp.Services.RoomServices;
 using HotelApp.UI;
 using HotelApp.UI.Menus;
@@ -24,30 +27,44 @@ namespace HotelApp.DI
                     .AsSelf()
                     .SingleInstance();
             builder.RegisterType<MainMenu>()
-                    .AsSelf()
+                    .As<IMenu>()
                     .SingleInstance();
             builder.RegisterType<ServiceMenu>()
                     .AsSelf()
                     .SingleInstance();
-            builder.RegisterType<CustomerMenu>()
+            builder.RegisterType<BookingController>()
                     .AsSelf()
                     .SingleInstance();
-            builder.RegisterType<BookingMenu>()
+            builder.RegisterType<CustomerController>()
                     .AsSelf()
                     .SingleInstance();
-            builder.RegisterType<RoomMenu>()
+            builder.RegisterType<InvoiceController>()
                     .AsSelf()
                     .SingleInstance();
-            builder.RegisterType<InvoiceMenu>()
+            builder.RegisterType<RoomController>()
                     .AsSelf()
                     .SingleInstance();
-            builder.RegisterType<RoomPropertyService>()
+            builder.RegisterType<RoomPropertySelector>()
                     .AsSelf()
                     .SingleInstance();
             builder.RegisterType<RoomService>()
                     .AsSelf()
                     .SingleInstance();
-
+            builder.RegisterType<CustomerPropertySelector>()
+                    .AsSelf()
+                    .SingleInstance();
+            builder.RegisterType<CustomerService>()
+                    .AsSelf()
+                    .SingleInstance();
+            builder.RegisterType<InvoicePropertySelector>()
+                    .AsSelf()
+                    .SingleInstance();
+            builder.RegisterType<InvoiceService>()
+                    .AsSelf()
+                    .SingleInstance();
+            builder.RegisterType<BookingService>()
+                    .AsSelf()
+                    .SingleInstance();
 
             builder.RegisterType<DataInitializer>()
                     .AsSelf();

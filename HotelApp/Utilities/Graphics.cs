@@ -21,6 +21,11 @@ namespace HotelApp.Utilities
         public static string GetHeaderAsString(string textToDisplay)
         {
             int totalLength = 87;
+            if (textToDisplay.Length > totalLength)
+            {
+                textToDisplay = textToDisplay.Substring(0, totalLength - 3) + "...";
+            }
+
             int padding = totalLength - textToDisplay.Length;
             int leftPadding = padding / 2;
             int rightPadding = padding - leftPadding;
@@ -28,5 +33,15 @@ namespace HotelApp.Utilities
 
             return $"║{centeredText}║\n╚═══════════════════════════════════════════════════════════════════════════════════════╝";
         }
+        //public static string GetHeaderAsString(string textToDisplay)
+        //{
+        //    int totalLength = 87;
+        //    int padding = totalLength - textToDisplay.Length;
+        //    int leftPadding = padding / 2;
+        //    int rightPadding = padding - leftPadding;
+        //    string centeredText = new string(' ', leftPadding) + textToDisplay + new string(' ', rightPadding);
+
+        //    return $"║{centeredText}║\n╚═══════════════════════════════════════════════════════════════════════════════════════╝";
+        //}
     }
 }

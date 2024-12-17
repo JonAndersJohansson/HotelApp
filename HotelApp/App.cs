@@ -10,8 +10,8 @@ namespace HotelApp
 {
     public class App
     {
-        private readonly MainMenu _mainMenu;
-        public App(MainMenu mainMenu)
+        private readonly IMenu _mainMenu;
+        public App(IMenu mainMenu)
         {
             _mainMenu = mainMenu;
         }

@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 
-namespace HotelApp.Models
+namespace HotelApp.Data.Models
 {
     public enum BedSize
     {
@@ -9,7 +9,8 @@ namespace HotelApp.Models
     }
     public class Room
     {
-        public required short RoomNumberAsID { get; set; }
+        public int RoomId { get; set; } // sätt till private set
+        public required short RoomNumber { get; set; }
         public required BedSize RoomType { get; set; } = BedSize.Single;
         public byte NumberOfPossibleExtraBeds { get; set; } = 0;
         public required decimal CostPerNight { get; set; }
@@ -20,7 +21,7 @@ namespace HotelApp.Models
 
         public override string ToString()
         {
-            return $"{RoomNumberAsID} - {RoomType}, Pris: {CostPerNight}, Möjliga extrasängar: {NumberOfPossibleExtraBeds}, AKTIV = {(IsActive ? "Ja" : "Nej")}";
+            return $"{RoomNumber} - {RoomType}, Pris: {CostPerNight}, Möjliga extrasängar: {NumberOfPossibleExtraBeds}";
         }
     }
 

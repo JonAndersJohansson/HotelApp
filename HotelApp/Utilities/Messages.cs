@@ -11,8 +11,8 @@ namespace HotelApp.Utilities
         public static void RequiredInputMessage()
         {
             Console.Write("  Krav:");
-            int currentLineCursor2 = Console.CursorTop;
-            Console.SetCursorPosition(72, currentLineCursor2);
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(72, currentLineCursor);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("'Exit' = Återgå ");
             Console.ResetColor();
@@ -20,8 +20,15 @@ namespace HotelApp.Utilities
         public static void SetValueWithCursor()
         {
             Console.WriteLine("\n  Ange värde: ");
-            int currentLineCursor1 = Console.CursorTop;
-            Console.SetCursorPosition(14, currentLineCursor1 - 1);
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(14, currentLineCursor - 1);
+        }
+        public static void SuccessfullInput()
+        {
+            Console.ForegroundColor= ConsoleColor.Green;
+            Console.WriteLine("\n  Värde tillagt. Glöm inte spara.");
+            Console.ResetColor();
+            Thread.Sleep(1000);
         }
 
     }

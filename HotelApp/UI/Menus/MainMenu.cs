@@ -16,30 +16,26 @@ namespace HotelApp.UI.Menus
     {
         private readonly DisplayList _displayList;
         private readonly Lazy<ServiceMenu> _serviceMenu;
-        private readonly string _mainMenuHeader = "Hej";
-        public MainMenu(DisplayList displayList, Lazy<ServiceMenu> serviceMenu)
+        private readonly BookingService _bookingService;
+        public MainMenu(DisplayList displayList, Lazy<ServiceMenu> serviceMenu, BookingService bookingService)
         {
             _displayList = displayList;
             _serviceMenu = serviceMenu;
+            _bookingService = bookingService;
         }
-
-        public readonly List<string> listMainMenu = new List<string>
-        {
-        "Sök", "Ny Bokning", "Visa besökande gäster", "Hantera - Kunder/Bokningar/Rum/Fakturor", "Avsluta"
-        };
-
-        /// <summary>
-        /// Metoden ger användaren alternativen i huvudmenyn genom DisplayList.
-        /// </summary>
         public void MenuSwitch()
         {
+            List<string> listMainMenu = new List<string>
+            {
+                "Sök", "Ny Bokning", "Visa nuvarande gäster", "Hantera - Kunder/Bokningar/Rum/Fakturor", "Avsluta"
+            };
             switch (_displayList.BrowseAList(listMainMenu, true, Graphics.GetHeaderAsString("Huvudmeny ↑/↓/↩"), true))
             {
                 case 0:
                     //Sök 
                     break;
                 case 1:
-                    // Ny Bokning
+                    _bookingService.CheckAvailability();
                     break;
                 case 2:
                     // Besökande

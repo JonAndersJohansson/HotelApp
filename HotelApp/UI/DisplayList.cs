@@ -14,12 +14,12 @@ namespace HotelApp.UI
     /// </summary>
     public class DisplayList
     {
-        private readonly Lazy<MainMenu> _mainMenu;
-        public DisplayList(Lazy<MainMenu> mainMenu )
-        {
-            _mainMenu = mainMenu;
-        }
-        public int BrowseAList<T>(List<T> genericList, bool isMainMenu, string? header, bool isMenu)
+        //private readonly IMenu _mainMenu;
+        //public DisplayList(IMenu mainMenu )
+        //{
+        //    _mainMenu = mainMenu;
+        //}
+        public int BrowseAList<T>(List<T> genericList, bool isMainMenuInSwitch, string? header, bool isMenuInSwitch)
         {
             int newIndex = 0;
             int selectedIndex = 0;
@@ -34,7 +34,7 @@ namespace HotelApp.UI
                 if (header != null)
                     Console.WriteLine(header);
                 else
-                    Console.WriteLine("Välj alternativ med piltangenterna upp/ned och tryck enter.");
+                    Console.WriteLine("Välj alternativ ↑/↓/↩");
                 Console.ResetColor();
 
                 if (genericList.Count == 0)
@@ -46,17 +46,23 @@ namespace HotelApp.UI
 
                 DisplayItems(genericList, selectedIndex);
 
-                if (!isMainMenu && isMenu)
+                if (!isMainMenuInSwitch && isMenuInSwitch)
                     ShowBackButton(selectedIndex == genericList.Count);
-                else if (!isMainMenu && !isMenu)
+                else if (!isMainMenuInSwitch && !isMenuInSwitch)
                     ShowAbortButton(selectedIndex == genericList.Count);
 
-                while (userInputIsUnsatisfying)
+                while (true)
                 {
                     newIndex = HandleUserInput(genericList, selectedIndex,
-                    isMainMenu, isMenu);
+                    isMainMenuInSwitch, isMenuInSwitch);
 
-                    if (newIndex != -1)
+                    if (newIndex == -1)
+                        return -1;
+                    else if (newIndex != -2)
+                        break;
+                    else if (newIndex == -2)
+                        continue;
+                    else
                         break;
                 }
                 if (newIndex != selectedIndex)
@@ -175,12 +181,14 @@ namespace HotelApp.UI
             else if (keyInfo.Key == ConsoleKey.Enter)
             {
                 if (selectedIndex == lista.Count && !isMenu)
-                    _mainMenu.Value.MenuSwitch();
+                {
+                    return -1;
+                }
                 else
                     return selectedIndex;
             }
             else
-                return -1;
+                return -2;
 
             return selectedIndex;
         }

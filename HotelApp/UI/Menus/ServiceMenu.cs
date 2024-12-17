@@ -1,4 +1,5 @@
-﻿using HotelApp.UI;
+﻿using HotelApp.Controllers;
+using HotelApp.UI;
 using HotelApp.Utilities;
 using System;
 using System.Collections.Generic;
@@ -14,13 +15,13 @@ namespace HotelApp.UI.Menus
     public class ServiceMenu : IMenu
     {
         private readonly DisplayList _displayList;
-        private readonly Lazy<MainMenu> _mainMenu;
-        private readonly Lazy<BookingMenu> _bookingMenu;
-        private readonly Lazy<CustomerMenu> _customerMenu;
-        private readonly Lazy<RoomMenu> _roomMenu;
-        private readonly Lazy<InvoiceMenu> _invoiceMenu;
+        private readonly IMenu _mainMenu;
+        private readonly Lazy<BookingController> _bookingMenu;
+        private readonly Lazy<CustomerController> _customerMenu;
+        private readonly Lazy<RoomController> _roomMenu;
+        private readonly Lazy<InvoiceController> _invoiceMenu;
 
-        public ServiceMenu(Lazy<MainMenu> mainMenu, DisplayList displayList, Lazy<BookingMenu> bookingMenu, Lazy<CustomerMenu> customerMenu, Lazy<RoomMenu> roomMenu, Lazy<InvoiceMenu> invoiceMenu)
+        public ServiceMenu(IMenu mainMenu, DisplayList displayList, Lazy<BookingController> bookingMenu, Lazy<CustomerController> customerMenu, Lazy<RoomController> roomMenu, Lazy<InvoiceController> invoiceMenu)
         {
             _displayList = displayList;
             _mainMenu = mainMenu;
@@ -29,17 +30,12 @@ namespace HotelApp.UI.Menus
             _roomMenu = roomMenu;
             _invoiceMenu = invoiceMenu;
         }
-
-        public readonly List<string> listServiceMenu = new List<string>
-        {
-        "Bokningar", "Kunder", "Fakturor", "Rum"
-        };
-
-        /// <summary>
-        /// Metoden ger användaren alternativen i menyn genom DisplayList.
-        /// </summary>
         public void MenuSwitch()
         {
+            List<string> listServiceMenu = new List<string>
+            {
+                "Bokningar", "Kunder", "Fakturor", "Rum"
+            };
             switch (_displayList.BrowseAList(listServiceMenu, false, Graphics.GetHeaderAsString("Hanteringsmeny ↑/↓/↩"), true))
             {
                 case 0:
@@ -55,12 +51,12 @@ namespace HotelApp.UI.Menus
                     _roomMenu.Value.MenuSwitch();
                     break;
                 case 4:
-                    _mainMenu.Value.MenuSwitch();
+                    _mainMenu.MenuSwitch();
                     return;
                 default:
                     Console.WriteLine("Ogiltigt alternativ 'ServiceMenu', tryck valfri tangent för att återgå.");
                     Console.ReadKey();
-                    _mainMenu.Value.MenuSwitch();
+                    _mainMenu.MenuSwitch();
                     break;
             }
         }
