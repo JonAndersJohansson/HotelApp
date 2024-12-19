@@ -29,29 +29,33 @@ namespace HotelApp.UI.Menus
             {
                 "Sök", "Ny Bokning", "Visa nuvarande gäster", "Hantera - Kunder/Bokningar/Rum/Fakturor", "Avsluta"
             };
-            switch (_displayList.BrowseAList(listMainMenu, true, Graphics.GetHeaderAsString("Huvudmeny ↑/↓/↩"), true))
+            while (true)
             {
-                case 0:
-                    //Sök 
-                    break;
-                case 1:
-                    _bookingService.CheckAvailability();
-                    break;
-                case 2:
-                    // Besökande
-                    break;
-                case 3:
-                    _serviceMenu.Value.MenuSwitch();
-                    break;
-                case 4:
-                    Environment.Exit(0);
-                    return;
-                default:
-                    Console.WriteLine("Ogiltigt alternativ 'MainMenu', tryck valfri tangent för att återgå.");
-                    Console.ReadKey();
-                    MenuSwitch();
-                    break;
+                switch (_displayList.BrowseAList(listMainMenu, true, Graphics.GetHeaderAsString("Huvudmeny ↑/↓/↩"), true))
+                {
+                    case 0:
+                        //Sök 
+                        break;
+                    case 1:
+                        _bookingService.CheckAvailability();
+                        break;
+                    case 2:
+                        // Besökande
+                        break;
+                    case 3:
+                        _serviceMenu.Value.MenuSwitch();
+                        break;
+                    case 4:
+                        Environment.Exit(0);
+                        return;
+                    default:
+                        Console.WriteLine("Ogiltigt alternativ 'MainMenu', tryck valfri tangent för att återgå.");
+                        Console.ReadKey();
+                        MenuSwitch();
+                        break;
+                }
             }
+            
         }
     }
 }

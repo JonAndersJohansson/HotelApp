@@ -3,6 +3,7 @@ using HotelApp.Controllers;
 using HotelApp.Data;
 using HotelApp.Services;
 using HotelApp.Services.BookingService;
+using HotelApp.Services.BookingServices;
 using HotelApp.Services.CustomerServices;
 using HotelApp.Services.InvoiceServices;
 using HotelApp.Services.RoomServices;
@@ -20,9 +21,6 @@ namespace HotelApp.DI
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<App>()
-                    .AsSelf()
-                    .SingleInstance();
             builder.RegisterType<DisplayList>()
                     .AsSelf()
                     .SingleInstance();

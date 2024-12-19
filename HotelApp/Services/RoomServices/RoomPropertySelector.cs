@@ -63,8 +63,7 @@ namespace HotelApp.Services.RoomServices
                         if (_roomService.ValidateRoom(room, isNew) == true)
                         {
                             _roomService.AddRoom(room);
-                            _roomController.Value.MenuSwitch();
-                            break;
+                            return;
                         }
                         else
                         {
@@ -73,13 +72,11 @@ namespace HotelApp.Services.RoomServices
                             break;
                         }
                     case 8:
-                        _roomController.Value.MenuSwitch();
                         return;
                     default:
                         Console.WriteLine("Ogiltigt alternativ i RoomPropertyService switch, tryck valfri tangent för att återgå.");
                         Console.ReadKey();
-                        _roomController.Value.MenuSwitch();
-                        break;
+                        return;
                 }
             }
         }

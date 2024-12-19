@@ -30,36 +30,39 @@ namespace HotelApp.Controllers
         {
             List<string> listBookingMenu = new List<string>
             {
-                "Sök bokning", "Skapa ny bokning", "Visa 100 tidigare bokningar", "Visa 100 kommande bokningar", "Lägg till Övrig info på bokning", "Avboka en bokning"
+                "Sök & visa bokning", "Skapa ny bokning", "Visa 100 tidigare bokningar", "Visa 100 kommande bokningar", "Lägg till Övrig info på bokning", "Avboka en bokning"
             };
-            switch (_displayList.BrowseAList(listBookingMenu, false, Graphics.GetHeaderAsString("Meny Bokningar ↑/↓/↩"), true))
+            while (true)
             {
-                case 0:
-                    _bookingService.ReadOneBooking(_bookingService.GetABookingInList(_bookingService.GetListOfBookingsBySearch(false, false), false, false), false);
-                    break;
-                case 1:
-                    //Skapa en ny bokning
-                    break;
-                case 2:
-                    //Visa 100 tidigare bokningar
-                    break;
-                case 3:
-                    //Visa 100 kommande bokningar
-                    break;
-                case 4:
-                    //Lägg till övrig info
-                    break;
-                case 5:
-                    //Avboka en bokning
-                    break;
-                case 6:
-                    _serviceMenu.Value.MenuSwitch();
-                    return;
-                default:
-                    Console.WriteLine("Ogiltigt alternativ 'BookingMenu', tryck valfri tangent för att återgå.");
-                    Console.ReadKey();
-                    _serviceMenu.Value.MenuSwitch();
-                    break;
+                switch (_displayList.BrowseAList(listBookingMenu, false, Graphics.GetHeaderAsString("Meny Bokningar ↑/↓/↩"), true))
+                {
+                    case 0:
+                        _bookingService.GetListOfBookingsBySearch(false, false);
+                        break;
+                    case 1:
+                        _bookingService.CheckAvailability();
+                        break;
+                    case 2:
+                        _bookingService.Get100ByStartDate(true);
+                        break;
+                    case 3:
+                        _bookingService.Get100ByStartDate(false);
+                        break;
+                    case 4:
+                        _bookingService.GetListOfBookingsBySearch(false, true);
+                        break;
+                    case 5:
+                        _bookingService.GetListOfBookingsBySearch(true, false);
+                        break;
+                    case 6:
+                        _serviceMenu.Value.MenuSwitch();
+                        return;
+                    default:
+                        Console.WriteLine("Ogiltigt alternativ 'BookingMenu', tryck valfri tangent för att återgå.");
+                        Console.ReadKey();
+                        _serviceMenu.Value.MenuSwitch();
+                        break;
+                }
             }
         }
     }

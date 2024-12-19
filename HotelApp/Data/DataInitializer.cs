@@ -39,7 +39,7 @@ namespace HotelApp.Data
             // Skapa 4 kunder
             var customer1 = new Customer
             {
-                CustomerId = 1,
+                Id = 1,
                 FirstName = "Anna",
                 LastName = "Svensson",
                 EmailAddress = "anna.svensson@example.com",
@@ -54,7 +54,7 @@ namespace HotelApp.Data
 
             var customer2 = new Customer
             {
-                CustomerId = 2,
+                Id = 2,
                 FirstName = "Erik",
                 LastName = "Johansson",
                 EmailAddress = "erik.johansson@example.com",
@@ -68,7 +68,7 @@ namespace HotelApp.Data
 
             var customer3 = new Customer
             {
-                CustomerId = 3,
+                Id = 3,
                 FirstName = "Lisa",
                 LastName = "Karlsson",
                 EmailAddress = "lisa.karlsson@example.com",
@@ -83,7 +83,7 @@ namespace HotelApp.Data
 
             var customer4 = new Customer
             {
-                CustomerId = 4,
+                Id = 4,
                 FirstName = "Johan",
                 LastName = "Nilsson",
                 EmailAddress = "johan.nilsson@example.com",
@@ -159,8 +159,8 @@ namespace HotelApp.Data
             // Skapa bokningar och kontrollera NumberOfGuests mot MaxPersonsAllowedInRoom
             var booking1 = new Booking
             {
-                BookingId = 1,
-                CustomerId = dbContext.Customers[0].CustomerId,
+                Id = 1,
+                CustomerId = dbContext.Customers[0].Id,
                 CustomerInBooking = dbContext.Customers[0],
                 StartDate = DateTime.Now.AddDays(5),
                 EndDate = DateTime.Now.AddDays(1),
@@ -172,8 +172,8 @@ namespace HotelApp.Data
 
             var booking2 = new Booking
             {
-                BookingId = 2,
-                CustomerId = dbContext.Customers[1].CustomerId,
+                Id = 2,
+                CustomerId = dbContext.Customers[1].Id,
                 CustomerInBooking = dbContext.Customers[1],
                 StartDate = DateTime.Now.AddDays(2), 
                 EndDate = DateTime.Now.AddDays(6),
@@ -184,8 +184,8 @@ namespace HotelApp.Data
 
             var booking3 = new Booking
             {
-                BookingId = 3,
-                CustomerId = dbContext.Customers[2].CustomerId,
+                Id = 3,
+                CustomerId = dbContext.Customers[2].Id,
                 CustomerInBooking = dbContext.Customers[2],
                 StartDate = DateTime.Now.AddDays(3),
                 EndDate = DateTime.Now.AddDays(7),
@@ -196,8 +196,8 @@ namespace HotelApp.Data
 
             var booking4 = new Booking
             {
-                BookingId = 4,
-                CustomerId = dbContext.Customers[3].CustomerId,
+                Id = 4,
+                CustomerId = dbContext.Customers[3].Id,
                 CustomerInBooking = dbContext.Customers[3],
                 StartDate = DateTime.Now.AddDays(4),
                 EndDate = DateTime.Now.AddDays(8),
@@ -207,8 +207,8 @@ namespace HotelApp.Data
             };
             var booking5 = new Booking
             {
-                BookingId = 5,
-                CustomerId = dbContext.Customers[2].CustomerId,
+                Id = 5,
+                CustomerId = dbContext.Customers[2].Id,
                 CustomerInBooking = dbContext.Customers[2],
                 StartDate = DateTime.Now.AddDays(-30),
                 EndDate = DateTime.Now.AddDays(-27),
@@ -218,8 +218,8 @@ namespace HotelApp.Data
             };
             var booking6 = new Booking
             {
-                BookingId = 6,
-                CustomerId = dbContext.Customers[2].CustomerId,
+                Id = 6,
+                CustomerId = dbContext.Customers[2].Id,
                 CustomerInBooking = dbContext.Customers[2],
                 StartDate = DateTime.Now.AddDays(-40),
                 EndDate = DateTime.Now.AddDays(-37),
@@ -229,8 +229,8 @@ namespace HotelApp.Data
             };
             var booking7 = new Booking
             {
-                BookingId = 7,
-                CustomerId = dbContext.Customers[2].CustomerId,
+                Id = 7,
+                CustomerId = dbContext.Customers[2].Id,
                 CustomerInBooking = dbContext.Customers[2],
                 StartDate = DateTime.Now.AddDays(-50),
                 EndDate = DateTime.Now.AddDays(-48),
@@ -240,8 +240,8 @@ namespace HotelApp.Data
             };
             var booking8 = new Booking
             {
-                BookingId = 8,
-                CustomerId = dbContext.Customers[2].CustomerId,
+                Id = 8,
+                CustomerId = dbContext.Customers[2].Id,
                 CustomerInBooking = dbContext.Customers[2],
                 StartDate = DateTime.Now.AddDays(-10),
                 EndDate = DateTime.Now.AddDays(-8),
@@ -251,8 +251,8 @@ namespace HotelApp.Data
             };
             var booking9 = new Booking
             {
-                BookingId = 9,
-                CustomerId = dbContext.Customers[2].CustomerId,
+                Id = 9,
+                CustomerId = dbContext.Customers[2].Id,
                 CustomerInBooking = dbContext.Customers[2],
                 StartDate = DateTime.Now.AddDays(-10),
                 EndDate = DateTime.Now.AddDays(-12),
@@ -262,8 +262,8 @@ namespace HotelApp.Data
             };
             var booking10 = new Booking
             {
-                BookingId = 10,
-                CustomerId = dbContext.Customers[2].CustomerId,
+                Id = 10,
+                CustomerId = dbContext.Customers[2].Id,
                 CustomerInBooking = dbContext.Customers[2],
                 StartDate = DateTime.Now.AddDays(-20),
                 EndDate = DateTime.Now.AddDays(-23),
@@ -273,8 +273,8 @@ namespace HotelApp.Data
             };
             var booking11 = new Booking
             {
-                BookingId = 11,
-                CustomerId = dbContext.Customers[2].CustomerId,
+                Id = 11,
+                CustomerId = dbContext.Customers[2].Id,
                 CustomerInBooking = dbContext.Customers[2],
                 StartDate = DateTime.Now.AddDays(33),
                 EndDate = DateTime.Now.AddDays(35),
@@ -292,8 +292,8 @@ namespace HotelApp.Data
             // Skapa fakturor
             var invoice1 = new Invoice
             {
-                InvoiceId = 1,
-                BookingId = dbContext.Bookings[0].BookingId,
+                Id = 1,
+                BookingId = dbContext.Bookings[0].Id,
                 BookingInInvoice = dbContext.Bookings[0],
                 TotalAmount = 2000m,
                 DueDate = dbContext.Bookings[0].StartDate.AddDays(30),
@@ -304,8 +304,8 @@ namespace HotelApp.Data
 
             var invoice2 = new Invoice
             {
-                InvoiceId = 2,
-                BookingId = dbContext.Bookings[1].BookingId,
+                Id = 2,
+                BookingId = dbContext.Bookings[1].Id,
                 BookingInInvoice = dbContext.Bookings[1],
                 TotalAmount = 3200m,
                 DueDate = dbContext.Bookings[1].StartDate.AddDays(20),
@@ -316,8 +316,8 @@ namespace HotelApp.Data
 
             var invoice3 = new Invoice
             {
-                InvoiceId = 3,
-                BookingId = dbContext.Bookings[2].BookingId,
+                Id = 3,
+                BookingId = dbContext.Bookings[2].Id,
                 BookingInInvoice = dbContext.Bookings[2],
                 TotalAmount = 3600m,
                 DueDate = dbContext.Bookings[2].StartDate.AddDays(10),
@@ -328,8 +328,8 @@ namespace HotelApp.Data
 
             var invoice4 = new Invoice
             {
-                InvoiceId = 4,
-                BookingId = dbContext.Bookings[3].BookingId,
+                Id = 4,
+                BookingId = dbContext.Bookings[3].Id,
                 BookingInInvoice = dbContext.Bookings[3],
                 TotalAmount = 4000m,
                 DueDate = dbContext.Bookings[3].StartDate.AddDays(30),
@@ -352,7 +352,7 @@ namespace HotelApp.Data
 
             var bookingRoom1 = new BookingRoom
             {
-                BookingId = dbContext.Bookings[0].BookingId,
+                Id = dbContext.Bookings[0].Id,
                 Booking = dbContext.Bookings[0],
                 RoomNumberAsID = dbContext.Rooms[0].RoomNumber,
                 Room = dbContext.Rooms[0],
@@ -360,7 +360,7 @@ namespace HotelApp.Data
 
             var bookingRoom2 = new BookingRoom
             {
-                BookingId = dbContext.Bookings[1].BookingId,
+                Id = dbContext.Bookings[1].Id,
                 Booking = dbContext.Bookings[1],
                 RoomNumberAsID = dbContext.Rooms[1].RoomNumber,
                 Room = dbContext.Rooms[1],
@@ -368,7 +368,7 @@ namespace HotelApp.Data
 
             var bookingRoom3 = new BookingRoom
             {
-                BookingId = dbContext.Bookings[2].BookingId,
+                Id = dbContext.Bookings[2].Id,
                 Booking = dbContext.Bookings[2],
                 RoomNumberAsID = dbContext.Rooms[2].RoomNumber,
                 Room = dbContext.Rooms[2],
@@ -376,7 +376,7 @@ namespace HotelApp.Data
 
             var bookingRoom4 = new BookingRoom
             {
-                BookingId = dbContext.Bookings[3].BookingId,
+                Id = dbContext.Bookings[3].Id,
                 Booking = dbContext.Bookings[3],
                 RoomNumberAsID = dbContext.Rooms[3].RoomNumber,
                 Room = dbContext.Rooms[3],
@@ -391,7 +391,7 @@ namespace HotelApp.Data
             foreach (var bookingRoom in dbContext.BookingRooms)
             {
                 var room = dbContext.Rooms.FirstOrDefault(r => r.RoomNumber == bookingRoom.RoomNumberAsID);
-                var booking = dbContext.Bookings.FirstOrDefault(b => b.BookingId == bookingRoom.BookingId);
+                var booking = dbContext.Bookings.FirstOrDefault(b => b.Id == bookingRoom.Id);
 
                 if (room != null)
                 {
@@ -405,7 +405,7 @@ namespace HotelApp.Data
             }
             foreach (var booking in dbContext.Bookings)
             {
-                var customer = dbContext.Customers.FirstOrDefault(c => c.CustomerId == booking.CustomerId);
+                var customer = dbContext.Customers.FirstOrDefault(c => c.Id == booking.CustomerId);
 
                 if (customer != null)
                 {

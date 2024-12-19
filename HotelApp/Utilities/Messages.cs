@@ -31,5 +31,21 @@ namespace HotelApp.Utilities
             Thread.Sleep(1000);
         }
 
+        public static void ClearAndShowHeader(string headerText)
+        {
+            Console.Clear();
+            Graphics.ShowMainGraphics();
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine(Graphics.GetHeaderAsString(headerText));
+            Console.ResetColor();
+        }
+
+        public static void AbortBooking()
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("\n  Avbryter bokning...");
+            Console.ResetColor();
+            Thread.Sleep(1000);
+        }
     }
 }

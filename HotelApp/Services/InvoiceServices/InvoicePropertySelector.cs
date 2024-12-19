@@ -59,8 +59,7 @@ namespace HotelApp.Services.InvoiceServices
                         if (_invoiceService.ValidateInvoice(invoice) == true)
                         {
                             _invoiceService.AddInvoice(invoice);
-                            _invoiceController.Value.MenuSwitch();
-                            break;
+                            return;
                         }
                         else
                         {
@@ -69,13 +68,11 @@ namespace HotelApp.Services.InvoiceServices
                             break;
                         }
                     case 6:
-                        _invoiceController.Value.MenuSwitch();
                         return;
                     default:
                         Console.WriteLine("Ogiltigt alternativ i InvoicePropertySelector switch, tryck valfri tangent för att återgå.");
                         Console.ReadKey();
-                        _invoiceController.Value.MenuSwitch();
-                        break;
+                        return;
                 }
             }
         }

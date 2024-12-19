@@ -1,38 +1,26 @@
-﻿
-using HotelApp.Controllers;
-using HotelApp.Data;
+﻿using HotelApp.Data;
 using HotelApp.Data.Models;
 using HotelApp.Services.CustomerServices;
 using HotelApp.Services.InvoiceServices;
 using HotelApp.UI;
-using HotelApp.UI.Menus;
 using HotelApp.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HotelApp.Services.BookingService
 {
     public class BookingService
     {
         private readonly DisplayList _displayList;
-        private readonly Lazy<IMenu> _mainMenu;
         private readonly ApplicationDbContext_FAKE _dbContext;
-        private readonly RoomService _roomService;
-        private readonly CustomerService _customerService;
-        private readonly InvoiceService _invoiceService;
-        private readonly Lazy<BookingController> _bookingController;
-        public BookingService(DisplayList displayList, Lazy<IMenu> mainMenu, ApplicationDbContext_FAKE dbContext, RoomService roomService, CustomerService customerServices, InvoiceService invoiceService, Lazy<BookingController> bookingController)
+        private readonly Lazy<RoomService> _roomService;
+        private readonly Lazy<CustomerService> _customerService;
+        private readonly Lazy<InvoiceService> _invoiceService;
+        public BookingService(DisplayList displayList, ApplicationDbContext_FAKE dbContext, Lazy<RoomService> roomService, Lazy<CustomerService> customerServices, Lazy<InvoiceService> invoiceService)
         {
             _displayList = displayList;
-            _mainMenu = mainMenu;
             _dbContext = dbContext;
             _roomService = roomService;
             _customerService = customerServices;
             _invoiceService = invoiceService;
-            _bookingController = bookingController;
         }
         public void CheckAvailability()
         {
@@ -40,13 +28,12 @@ namespace HotelApp.Services.BookingService
             DateTime endDate;
             byte numberOfGuests;
             List<Room> selectedRooms = new List<Room>();
-            //List<List<Room>> listOfAvailableRoomCombinations = new List<Room>();
 
             while (true)
             {
                 startDate = GetStartDate("Välj INCHECKNING");
                 if (startDate == DateTime.MinValue)
-                    AbortBookingInMainMenu();
+                    return;
                 if (startDate < DateTime.Now.Date)
                 {
                     Console.WriteLine("  Ogiltig incheckningsdatum. Datumet kan inte vara bakåt i tiden.\n  Tryck på valfri tangent för att försöka igen...");
@@ -57,7 +44,7 @@ namespace HotelApp.Services.BookingService
 
                 endDate = GetStartDate("Välj UTCHECKNING");
                 if (startDate == DateTime.MinValue)
-                    AbortBookingInMainMenu();
+                    return;
                 if (endDate < startDate)
                 {
                     Console.WriteLine("  Ogiltig utcheckningsdatum. Datumet måste vara efter inckeckningsdatum.\n  Tryck på valfri tangent för att försöka igen...");
@@ -68,29 +55,29 @@ namespace HotelApp.Services.BookingService
                 break;
             }
             
-
             numberOfGuests = GetNumberOfGuests();
             if (numberOfGuests == 0)
-                AbortBookingInMainMenu();
+                return;
 
-            List<List<Room>> listOfAvailableRoomCombinations = GetAvailableRooms(startDate, endDate, numberOfGuests);
-
+            List<List<Room>>? listOfAvailableRoomCombinations = GetAvailableRooms(startDate, endDate, numberOfGuests);
+            if (listOfAvailableRoomCombinations == null)
+                return;
             List<string> listOfFormattedRoomCombinations = listOfAvailableRoomCombinations
-                .Select(combination => _roomService.FormatRoomCombination(combination))
+                .Select(combination => _roomService.Value.FormatRoomCombination(combination))
                 .ToList();
 
             int selectedIndexInListOfFormattedRoomCompinations = _displayList.BrowseAList(listOfFormattedRoomCombinations, false, Graphics.GetHeaderAsString("Sökresultat lediga rumskombinationer"), false);
 
             if (selectedIndexInListOfFormattedRoomCompinations == -1)
-                AbortBookingInMainMenu();
+                return;
             else if (selectedIndexInListOfFormattedRoomCompinations >= listOfAvailableRoomCombinations.Count)
             {
                 Console.WriteLine("  Ogiltigt värde. Avbryter bokning.\n  Tryck på valfri tangent för att återgå till huvudmenyn...");
                 Console.ReadKey();
-                AbortBookingInMainMenu();
+                return;
             }
             selectedRooms = listOfAvailableRoomCombinations[selectedIndexInListOfFormattedRoomCompinations];
-            var otherInfo = GetOtherInfoInBooking();
+            var otherInfo = GetOtherInfoAsString();
             if (selectedRooms.Any())
             {
                 StartNewBooking(selectedRooms, startDate, endDate, numberOfGuests, otherInfo);
@@ -99,15 +86,13 @@ namespace HotelApp.Services.BookingService
             {
                 Console.WriteLine("\n  Ingen rumskombination vald, avbryter bokning.\n  Tryck på valfri tangent för att återgå till huvudmenyn...");
                 Console.ReadKey();
-                AbortBookingInMainMenu();
+                return;
             }
         }
 
-        public string? GetOtherInfoInBooking()
+        public string? GetOtherInfoAsString()
         {
-            Console.Clear();
-            Graphics.GetHeaderAsString("Övrig information om bokningen");
-
+            Messages.ClearAndShowHeader("Övrig information om bokningen");
             Console.WriteLine("  Ange övrig information om bokningen (valfritt):");
             Console.WriteLine("  Lämna fältet tomt och tryck ENTER om du inte vill ange något.");
 
@@ -120,14 +105,20 @@ namespace HotelApp.Services.BookingService
 
         public void StartNewBooking(List<Room> selectedRooms, DateTime startDate, DateTime endDate, byte numberOfGuests, string? otherInfo)
         {
-            var customerInNewBooking = _customerService.GetCustomer();
-            CreateNewBooking(selectedRooms, startDate, endDate, numberOfGuests, customerInNewBooking, otherInfo);
+            var customerInNewBooking = _customerService.Value.GetCustomer();
+            if (customerInNewBooking == null)
+            {
+                Console.WriteLine("  Ingen kund kunde hittas.\n  ryck på valfri tangent för att återgå...");
+                Console.ReadKey();
+                Messages.AbortBooking();
+                return;
+            }
+            else if (customerInNewBooking != null)
+                CreateNewBooking(selectedRooms, startDate, endDate, numberOfGuests, customerInNewBooking, otherInfo);
         }
 
         public void CreateNewBooking(List<Room> selectedRooms, DateTime startDate, DateTime endDate, byte numberOfGuests, Customer customer, string? otherInfo)
         {
-            Console.WriteLine("CreateNewBooking");
-            Console.ReadKey();
             var newBooking = GenerateBookingFromInput(selectedRooms, startDate, endDate, numberOfGuests, customer, otherInfo);
             
             Console.ForegroundColor = ConsoleColor.Green;
@@ -136,7 +127,7 @@ namespace HotelApp.Services.BookingService
             Thread.Sleep(1000);
             
             SaveBookingToDataBase(newBooking);
-            _invoiceService.GenerateInvoiceOfBooking(newBooking);
+            _invoiceService.Value.GenerateInvoiceOfBooking(newBooking);
             
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\n  Faktura skapad...");
@@ -148,9 +139,9 @@ namespace HotelApp.Services.BookingService
 
         public void ReadOneBooking(Booking booking, bool isNewFromStart)
         {
-            string messageToUseInHeader = $"Visar bokningsnummer {booking.BookingId}";
+            string messageToUseInHeader = $"Visar bokningsnummer {booking.Id}";
             if (isNewFromStart)
-                messageToUseInHeader = $"Bokning med bokningsnummer {booking.BookingId} skapad";
+                messageToUseInHeader = $"Bokning med bokningsnummer {booking.Id} skapad";
 
             Console.Clear();
             Graphics.ShowMainGraphics();
@@ -159,9 +150,8 @@ namespace HotelApp.Services.BookingService
             Console.WriteLine(Graphics.GetHeaderAsString(messageToUseInHeader));
             Console.ResetColor();
 
-            // Grundläggande information om bokningen
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"  BokningsNr: {booking.BookingId}");
+            Console.WriteLine($"  BokningsNr: {booking.Id}");
             Console.WriteLine($"  Incheckning: {booking.StartDate:yyyy-MM-dd}");
             Console.WriteLine($"  Utcheckning: {booking.EndDate:yyyy-MM-dd}");
             Console.WriteLine($"  Antal gäster: {booking.NumberOfGuests}");
@@ -169,16 +159,14 @@ namespace HotelApp.Services.BookingService
             Console.WriteLine($"  Övrig information: {booking.OtherInfoInBooking ?? "Ingen"}");
             Console.ResetColor();
 
-            // Koppling till kunden
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"\n     --- Kundinformation ---");
-            Console.WriteLine($"     KundNr: {booking.CustomerInBooking.CustomerId}");
+            Console.WriteLine($"     KundNr: {booking.CustomerInBooking.Id}");
             Console.WriteLine($"     Namn: {booking.CustomerInBooking.FirstName} {booking.CustomerInBooking.LastName}");
             Console.WriteLine($"     Telefonnummer: {booking.CustomerInBooking.PhoneNumber}");
             Console.WriteLine($"     Email: {booking.CustomerInBooking.EmailAddress}");
             Console.ResetColor();
 
-            // Kopplade rum via BookingRoom
             if (booking.ListOfBookingRoomsInBooking != null && booking.ListOfBookingRoomsInBooking.Any())
             {
                 Console.ForegroundColor = ConsoleColor.Magenta;
@@ -196,14 +184,13 @@ namespace HotelApp.Services.BookingService
                 Console.ResetColor();
             }
 
-            // Fakturainformation
             if (booking.ListOfInvoicesInBooking != null && booking.ListOfInvoicesInBooking.Any())
             {
                 Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine($"\n           --- Relaterade Fakturor ---");
                 foreach (var invoice in booking.ListOfInvoicesInBooking)
                 {
-                    Console.WriteLine($"           FakturaNr: {invoice.InvoiceId}, Belopp: {invoice.TotalAmount:C}, Betald: {(invoice.IsPaid ? "Ja" : "Nej")}, Förfallen: {(invoice.IsOverDue ? "Ja" : "Nej")}");
+                    Console.WriteLine($"           FakturaNr: {invoice.Id}, Belopp: {invoice.TotalAmount:C}, Betald: {(invoice.IsPaid ? "Ja" : "Nej")}, Förfallen: {(invoice.IsOverDue ? "Ja" : "Nej")}");
                 }
                 Console.ResetColor();
             }
@@ -214,10 +201,8 @@ namespace HotelApp.Services.BookingService
                 Console.ResetColor();
             }
 
-            // Återgå till huvudmenyn
             Console.WriteLine("\n  Tryck på någon tangent för att återgå...");
             Console.ReadKey();
-            _mainMenu.Value.MenuSwitch();
         }
 
 
@@ -230,39 +215,37 @@ namespace HotelApp.Services.BookingService
         {
             if (selectedRooms == null || !selectedRooms.Any())
             {
-                throw new ArgumentException("Inga rum valdes. Bokning kan inte genereras.");
+                throw new ArgumentException("  Inga rum valdes. Bokning kan inte genereras.");
             }
 
             if (numberOfGuests <= 0)
             {
-                throw new ArgumentException("Antalet gäster måste vara större än 0.");
+                throw new ArgumentException("  Antalet gäster måste vara större än 0.");
             }
 
             if (startDate >= endDate)
             {
-                throw new ArgumentException("Utcheckningsdatum måste vara senare än incheckningsdatum.");
+                throw new ArgumentException("  Utcheckningsdatum måste vara senare än incheckningsdatum.");
             }
 
-            // Skapa en ny bokning
             var newBooking = new Booking
             {
                 StartDate = startDate,
                 EndDate = endDate,
                 NumberOfGuests = numberOfGuests,
                 CustomerInBooking = customer,
-                CustomerId = customer.CustomerId,
+                CustomerId = customer.Id,
                 OtherInfoInBooking = otherInfo,
                 ListOfBookingRoomsInBooking = new List<BookingRoom>()
             };
 
-            // Koppla rum till bokningen via BookingRoom
             foreach (var room in selectedRooms)
             {
                 newBooking.ListOfBookingRoomsInBooking.Add(new BookingRoom
                 {
-                    Booking = newBooking,         // Koppla bokningen
-                    Room = room,                  // Koppla rummet
-                    BookingId = newBooking.BookingId, // Sätts när bokningen sparas i databasen
+                    Booking = newBooking,
+                    Room = room,
+                    Id = newBooking.Id,
                     RoomNumberAsID = room.RoomNumber
                 });
             }
@@ -272,31 +255,27 @@ namespace HotelApp.Services.BookingService
 
 
 
-        public List<List<Room>> GetAvailableRooms(DateTime startDate, DateTime endDate, byte numberOfGuests)
+        public List<List<Room>>? GetAvailableRooms(DateTime startDate, DateTime endDate, byte numberOfGuests)
         {
-            // Hämta alla aktiva rum
             var availableRooms = _dbContext.Rooms
                 .Where(r => r.IsActive && IsRoomAvailable(r, startDate, endDate))
                 .ToList();
 
-            // Lista för att lagra möjliga kombinationer av rum
             var roomCombinations = new List<List<Room>>();
 
-            // Generera alla möjliga kombinationer av rum som täcker antalet gäster
             FindRoomCombinations(availableRooms, numberOfGuests, new List<Room>(), roomCombinations);
 
             if (roomCombinations == null || !roomCombinations.Any())
             {
                 Console.WriteLine("  Inga lediga rumskombinationer hittades för det angivna datumet och antalet gäster.\n  Tryck på valfri tangent för att återgå till huvudmenyn...");
                 Console.ReadKey();
-                AbortBookingInMainMenu();
+                return null;
             }
             return roomCombinations;
         }
 
         private bool IsRoomAvailable(Room room, DateTime startDate, DateTime endDate)
         {
-            // Kontrollera att rummet är ledigt för det angivna datumintervallet
             return room.ListOfBookingRoomsInRoom == null || !room.ListOfBookingRoomsInRoom
                 .Any(br => !(endDate <= br.Booking.StartDate || startDate >= br.Booking.EndDate));
         }
@@ -305,7 +284,6 @@ namespace HotelApp.Services.BookingService
         {
             if (remainingGuests <= 0)
             {
-                // Om vi täckt alla gäster, lägg till kombinationen i resultatet
                 result.Add(new List<Room>(currentCombination));
                 return;
             }
@@ -317,32 +295,23 @@ namespace HotelApp.Services.BookingService
 
                 if (roomCapacity >= remainingGuests || roomCapacity > 0)
                 {
-                    // Lägg till rummet i nuvarande kombination
                     currentCombination.Add(room);
 
-                    // Rekursiv sökning med uppdaterat gästantal och resterande rum
                     FindRoomCombinations(rooms.Skip(i + 1).ToList(), remainingGuests - roomCapacity, currentCombination, result);
 
-                    // Ta bort det senast tillagda rummet (backtracking)
                     currentCombination.RemoveAt(currentCombination.Count - 1);
                 }
             }
         }
         private int GetRoomCapacity(Room room)
         {
-            // Beräkna rummets kapacitet baserat på typ och extra sängar
             int baseCapacity = room.RoomType == BedSize.Double ? 2 : 1;
             return baseCapacity + room.NumberOfPossibleExtraBeds;
         }
 
-
         public byte GetNumberOfGuests()
         {
-            Console.Clear();
-            Graphics.ShowMainGraphics();
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine(Graphics.GetHeaderAsString("Antal gäster"));
-            Console.ResetColor();
+            Messages.ClearAndShowHeader("Antal gäster");
             Messages.RequiredInputMessage();
             Console.Write("  1. Värdet måste vara mellan 1-255.\n");
             Messages.SetValueWithCursor();
@@ -350,9 +319,9 @@ namespace HotelApp.Services.BookingService
             byte numberOfGuests = 0;
             while (true)
             {
-                string input = Console.ReadLine();
+                string? input = Console.ReadLine();
                 if (input.ToLower() == "exit")
-                    AbortBookingInMainMenu();
+                    return 0;
 
                 if (string.IsNullOrWhiteSpace(input))
                     return 0;
@@ -370,20 +339,9 @@ namespace HotelApp.Services.BookingService
                     Console.WriteLine("Ogiltig inmatning. Ange ett heltal mellan 1 och 255.\n  Tryck på valfri tangent för att fortsätta...");
                     Console.ReadKey();
                 }
-                
             }
             return numberOfGuests;
         }
-
-        public void AbortBookingInMainMenu()
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("\n  Avbryter bokning...");
-            Console.ResetColor();
-            Thread.Sleep(1000);
-            _mainMenu.Value.MenuSwitch();
-        }
-
         public DateTime GetEndDate(string headerMessage)
         {
             var selectedEndDate = Calendar.GetDateTimeByCalendar(headerMessage);
@@ -396,18 +354,15 @@ namespace HotelApp.Services.BookingService
             return selectedStartDate;
         }
 
-        public List<Booking> GetListOfBookingsBySearch(bool isCancel, bool isToUpdateInfo)
+        public void GetListOfBookingsBySearch(bool isCancel, bool isToUpdateInfo)
         {
             string messageToUseInHeader = "Sök kund";
             if (isCancel)
                 messageToUseInHeader = "Sök för att avboka en bokning";
             if (isToUpdateInfo)
                 messageToUseInHeader = "Sök för att lägga till information";
-            Console.Clear();
-            Graphics.ShowMainGraphics();
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine(Graphics.GetHeaderAsString(messageToUseInHeader));
-            Console.ResetColor();
+
+            Messages.ClearAndShowHeader(messageToUseInHeader);
             Messages.RequiredInputMessage();
             Console.WriteLine("   1. Sökbar bokningsinfo: Namn, BokningsNr, Incheckningsdatum/Utcheckningsdatum (YYYY-MM-DD");
             Console.WriteLine("\n  Sök:");
@@ -419,13 +374,11 @@ namespace HotelApp.Services.BookingService
             {
                 Console.WriteLine("  Inga bokningar hittades som matchar din sökning.\n  Tryck valfri tangent för att återgå...");
                 Console.ReadKey();
-                _bookingController.Value.MenuSwitch();
-                return new List<Booking>();
+                return;
             }
             if (userInput.ToLower() == "exit")
             {
-                _bookingController.Value.MenuSwitch();
-                return new List<Booking>();
+                return;
             }
 
             userInput = userInput.ToLower();
@@ -433,7 +386,7 @@ namespace HotelApp.Services.BookingService
                 .Where(b =>
                     b.CustomerInBooking.FirstName.ToLower().Contains(userInput) ||
                     b.CustomerInBooking.LastName.ToLower().Contains(userInput) ||
-                    b.BookingId.ToString().Contains(userInput) ||
+                    b.Id.ToString().Contains(userInput) ||
                     (DateTime.TryParse(userInput, out DateTime inputDate) &&
                     (b.StartDate.Date == inputDate || b.EndDate.Date == inputDate)))
                 .ToList();
@@ -442,12 +395,13 @@ namespace HotelApp.Services.BookingService
             {
                 Console.WriteLine("  Inga bokningar hittades som matchar din sökning.\n  Tryck valfri tangent för att återgå...");
                 Console.ReadKey();
+                return;
             }
-
-            return matchingBookings;
+            else
+                GetABookingInList(matchingBookings, isCancel, isToUpdateInfo);
         }
 
-        public Booking GetABookingInList(List<Booking> matchingBookings, bool isToCancel, bool isToUpdateInfo)
+        public void GetABookingInList(List<Booking> matchingBookings, bool isToCancel, bool isToUpdateInfo)
         {
             string messageToUseInHeader = "Sökresultat, välj bokning för att visa all info ↑/↓/↩";
             if (isToCancel)
@@ -456,15 +410,112 @@ namespace HotelApp.Services.BookingService
                 messageToUseInHeader = "Sökresultat, välj bokning för att lägga till eller ändra Övrig info ↑/↓/↩";
 
             var selectedIndex = _displayList.BrowseAList(matchingBookings, false, Graphics.GetHeaderAsString(messageToUseInHeader), false);
-            if (selectedIndex >= 0 && selectedIndex < matchingBookings.Count)
-                return matchingBookings[selectedIndex];
+            if (selectedIndex >= 0 && selectedIndex < matchingBookings.Count && isToCancel && !isToUpdateInfo)
+                CancelBooking(matchingBookings[selectedIndex]);
+            else if (selectedIndex >= 0 && selectedIndex < matchingBookings.Count && !isToCancel && isToUpdateInfo)
+                ChangeOtherInfo(matchingBookings[selectedIndex]);
+            else if (selectedIndex >= 0 && selectedIndex < matchingBookings.Count && !isToCancel && !isToUpdateInfo)
+                ReadOneBooking(matchingBookings[selectedIndex], false);
             else if (selectedIndex == -1)
+                return;
+            else
             {
-                _bookingController.Value.MenuSwitch();
-                return matchingBookings[-1];
+                Console.WriteLine("  Fel: Ogiltigt värde i GetABookingInList.\n  Tryck på valfri tangent för att återgå...");
+                Console.ReadKey();
+                return;
+            }
+        }
+
+        private void ChangeOtherInfo(Booking booking)
+        {
+            Messages.ClearAndShowHeader("Övrig information om bokningen");
+            Console.WriteLine("  Ange övrig information om bokningen (valfritt):");
+            Console.WriteLine("  Lämna fältet tomt och tryck ENTER om du inte vill ange något.");
+
+            string? otherInfo = Console.ReadLine()?.Trim();
+
+            // Uppdatera booking med den nya informationen
+            booking.OtherInfoInBooking = string.IsNullOrWhiteSpace(otherInfo) ? null : otherInfo;
+
+            // Uppdatera bokningen i dbContext
+            //_dbContext.Bookings.Update(booking);
+            //_dbContext.SaveChanges();
+
+            Messages.SuccessfullInput();
+        }
+
+        //public Booking GetOtherInfo(Booking booking)
+        //{
+        //    Messages.ClearAndShowHeader("Övrig information om bokningen");
+        //    Console.WriteLine("  Ange övrig information om bokningen (valfritt):");
+        //    Console.WriteLine("  Lämna fältet tomt och tryck ENTER om du inte vill ange något.");
+
+        //    string? otherInfo = Console.ReadLine()?.Trim();
+        //    booking.OtherInfoInBooking = otherInfo;
+        //    Messages.SuccessfullInput();
+        //    return booking;
+        //}
+
+        public void Get100ByStartDate(bool isPastStartDate)
+        {
+            List<Booking> bookings;
+
+            if (isPastStartDate)
+            {
+                // Hämta 100 tidigare bokningar sorterade fallande på StartDate
+                bookings = _dbContext.Bookings
+                    .Where(b => b.StartDate < DateTime.Now)
+                    .OrderByDescending(b => b.StartDate)
+                    .Take(100)
+                    .ToList();
             }
             else
-                return matchingBookings[-1];
+            {
+                // Hämta 100 kommande bokningar sorterade stigande på StartDate
+                bookings = _dbContext.Bookings
+                    .Where(b => b.StartDate >= DateTime.Now)
+                    .OrderBy(b => b.StartDate)
+                    .Take(100)
+                    .ToList();
+            }
+            Messages.ClearAndShowHeader("Visar Top 100");
+
+            if (!bookings.Any())
+            {
+                Console.WriteLine("  Inga bokningar hittades för angivet kriterium.\n  Tryck på valfri tangent för att återgå...");
+                Console.ReadKey();
+                return;
+            }
+
+            foreach (var booking in bookings)
+            {
+                Console.WriteLine($"  BokningId: {booking.Id}, StartDate: {booking.StartDate:yyyy-MM-dd}, Kund: {booking.CustomerInBooking.FirstName} {booking.CustomerInBooking.LastName}");
+            }
+
+            Console.WriteLine("\n  Tryck på någon tangent för att återgå...");
+            Console.ReadKey();
+        }
+
+        public void CancelBooking(Booking booking)
+        {
+            if (booking == null)
+            {
+                Console.WriteLine("  Bokningen kan inte vara null. Tryck på valfri tangent för att fortsätta...");
+                Console.ReadKey();
+                return;
+            }
+
+            // Avbryt bokningen MOT DB!!
+            booking.IsCancelled = true;
+
+            if (booking.ListOfInvoicesInBooking != null && booking.ListOfInvoicesInBooking.Any())
+            {
+                foreach (var invoice in booking.ListOfInvoicesInBooking)
+                {
+                    invoice.IsCancelled = true;
+                }
+            }
+            Console.WriteLine($"  Bokningen med ID {booking.Id} och dess kopplade fakturor har annullerats.");
         }
     }
 }

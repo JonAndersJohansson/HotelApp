@@ -1,13 +1,7 @@
-﻿using HotelApp.UI;
-using HotelApp.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HotelApp.Controllers;
 using HotelApp.Data.Models;
-using HotelApp.Controllers;
-using HotelApp.UI.Menus;
+using HotelApp.UI;
+using HotelApp.Utilities;
 
 namespace HotelApp.Services.CustomerServices
 {
@@ -22,7 +16,7 @@ namespace HotelApp.Services.CustomerServices
             _displayList = displayList;
             _customerService = customerService;
         }
-        public Customer PropertySwitch(Customer customer, bool isNewFromCustomerMenu, bool isNewFromBooking)
+        public Customer? PropertySwitch(Customer customer, bool isNewFromCustomerMenu, bool isNewFromBooking)
         {
             List<string> menuListInCustomerPropertySelector = new List<string>
             {
@@ -31,7 +25,7 @@ namespace HotelApp.Services.CustomerServices
             while (true)
             {
                 string messageToUseInHeader = "Ny kund. Välj i listan och lägg till kundinformation ↑/↓/↩ (* = Krav)";
-                if (customer.CustomerId > 0)
+                if (customer.Id > 0)
                     messageToUseInHeader = $"Ändra {customer.FirstName} {customer.LastName}. Välj i listan för att ändra ↑/↓/↩ (* = Krav)";
 
                 switch (_displayList.BrowseAList(menuListInCustomerPropertySelector, false, Graphics.GetHeaderAsString(messageToUseInHeader), true))
@@ -79,11 +73,7 @@ namespace HotelApp.Services.CustomerServices
                             break;
                         }
                     case 9:
-                        if (!isNewFromBooking)
-                            _customerController.Value.MenuSwitch();
-                        else
-                            _customerService.AbortInCustomerService();
-                        break;
+                        return null;
                     default:
                         Console.WriteLine("Ogiltigt alternativ i CustomerPropertySelector switch, tryck valfri tangent för att återgå.");
                         Console.ReadKey();

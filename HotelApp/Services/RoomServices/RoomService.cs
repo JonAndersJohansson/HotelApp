@@ -1,62 +1,61 @@
-﻿using HotelApp.Controllers;
-using HotelApp.Data;
+﻿using HotelApp.Data;
 using HotelApp.Data.Models;
+using HotelApp.Services.RoomServices;
 using HotelApp.UI;
-using HotelApp.UI.Menus;
 using HotelApp.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HotelApp.Services
 {
     public class RoomService
     {
         private readonly DisplayList _displayList;
-        private readonly Lazy<RoomController>_roomController;
         private ApplicationDbContext_FAKE _dbContext;
-        public RoomService(DisplayList displayList, Lazy<RoomController> roomController, ApplicationDbContext_FAKE dbContext)
+        private readonly Lazy<RoomPropertySelector> _roomPropertySelector;
+        public RoomService(DisplayList displayList, ApplicationDbContext_FAKE dbContext, Lazy<RoomPropertySelector> roomPropertySelector)
         {
             _displayList = displayList;
-            _roomController = roomController;
             _dbContext = dbContext;
+            _roomPropertySelector = roomPropertySelector;
         }
-        public int GetARoomIndex(bool isDeactivate, bool isToChange)
+        public void GetRoomIndex(bool isDeactivate, bool isToChange)
         {
             string messageToUseInHeader = "Välj rum för att visa all info ↑/↓/↩";
             if (isDeactivate)
                 messageToUseInHeader = "Välj rum för att Avaktivera / Aktivera ↑/↓/↩";
             if (isToChange)
                 messageToUseInHeader = "Välj rum att ändra ↑/↓/↩";
+
             var selectedIndex = _displayList.BrowseAList(_dbContext.Rooms, false, Graphics.GetHeaderAsString(messageToUseInHeader), false);
             if (selectedIndex >= 0 && selectedIndex < _dbContext.Rooms.Count)
-                return selectedIndex;
+                GetARoom(selectedIndex, isDeactivate, isToChange);
             else if (selectedIndex == -1)
-            {
-                _roomController.Value.MenuSwitch();
-                return -1;
-            }
+                return;
             else
-                return -1;
+            {
+                Console.WriteLine("  Fel: Ogiltigt värde i GetRoomIndex.\n  Tryck valfri tangent för att återgå...");
+                Console.ReadKey();
+            }
         }
-        public Room GetARoom(int roomIndex)
+        public void GetARoom(int roomIndex, bool isDeactivate, bool isToChange)
         {
-            var selectedRoom = _dbContext.Rooms[roomIndex];
-            return selectedRoom;
+            var selectedRoom = _dbContext.Rooms[roomIndex]; /// DB
+
+            if (isDeactivate && selectedRoom != null)
+                DeactivateARoom(selectedRoom);
+            else if (isToChange && selectedRoom != null)
+                _roomPropertySelector.Value.PropertySwitch(selectedRoom, false);
+            else if (!isDeactivate && !isToChange && selectedRoom != null)
+                ReadOneRoom(selectedRoom);
+            else
+            {
+                Console.WriteLine("  Fel: Ogiltigt värde GetARoom.\n  Tryck valfri tangent för att återgå...");
+                Console.ReadKey();
+            }
         }
         public void ReadOneRoom(Room selectedRoom)
         {
-            Console.Clear();
-            Graphics.ShowMainGraphics();
+            Messages.ClearAndShowHeader($"  Info Rum: {selectedRoom.RoomNumber}");
 
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine(Graphics.GetHeaderAsString($"  Info Rum: {selectedRoom.RoomNumber}"));
-            Console.ResetColor();
-
-            // Visa all information om rummet
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine($"  Rumssnummer: {selectedRoom.RoomNumber}");
             Console.WriteLine($"  Rumstyp: {selectedRoom.RoomType}");
@@ -66,7 +65,7 @@ namespace HotelApp.Services
             Console.WriteLine($"  Övrigt: {selectedRoom.OtherOrDescription}");
             Console.WriteLine($"  Aktivt: {(selectedRoom.IsActive ? "Ja" : "Nej")}");
             Console.ResetColor();
-            // Visa relaterade bokningar (om några finns)
+
             if (selectedRoom.ListOfBookingRoomsInRoom?.Count > 0)
             {
                 var today = DateTime.Now;
@@ -82,7 +81,7 @@ namespace HotelApp.Services
                 Console.WriteLine("\n  --- Kommande bokningar (3 närmsta) ---");
                 foreach (var bookingRoom in afterToday)
                 {
-                    Console.WriteLine($"      Bokningnummer: {bookingRoom.BookingId}");
+                    Console.WriteLine($"      Bokningnummer: {bookingRoom.Id}");
                     Console.WriteLine($"      Namn: {bookingRoom.Booking.CustomerInBooking.LastName}, {bookingRoom.Booking.CustomerInBooking.FirstName}");
                     Console.WriteLine($"      Antal besökare: {bookingRoom.Booking.NumberOfGuests}");
                     Console.WriteLine($"      Incheckning: {bookingRoom.Booking.StartDate}");
@@ -93,7 +92,7 @@ namespace HotelApp.Services
                 Console.WriteLine("\n     --- Tidigare bokningar (3 senaste) ---");
                 foreach (var bookingRoom in beforeToday)
                 {
-                    Console.WriteLine($"         Bokningnummer: {bookingRoom.BookingId}");
+                    Console.WriteLine($"         Bokningnummer: {bookingRoom.Id}");
                     Console.WriteLine($"         Namn: {bookingRoom.Booking.CustomerInBooking.LastName}, {bookingRoom.Booking.CustomerInBooking.FirstName}");
                     Console.WriteLine($"         Antal besökare: {bookingRoom.Booking.NumberOfGuests}");
                     Console.WriteLine($"         Incheckning: {bookingRoom.Booking.StartDate}");
@@ -103,15 +102,11 @@ namespace HotelApp.Services
                 }
             }
             else
-            {
                 Console.WriteLine("\n  Inga relaterade bokningar.");
-            }
             Console.ResetColor();
-
 
             Console.WriteLine("\n  Tryck på någon tangent för att återgå...");
             Console.ReadKey();
-            _roomController.Value.MenuSwitch();
         }
 
         public Room GetRoomNumber(Room room, bool isNew)
@@ -122,11 +117,7 @@ namespace HotelApp.Services
 
             while (true)
             {
-                Console.Clear();
-                Graphics.ShowMainGraphics();
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine(Graphics.GetHeaderAsString(messageToUseInHeader));
-                Console.ResetColor();
+                Messages.ClearAndShowHeader(messageToUseInHeader);
                 Messages.RequiredInputMessage();
                 Console.WriteLine("   1. Följ standard. Första numret anger våning, därefter löpande.\n   2. Det måste vara ett positivt heltal mellan 1 och 999.");
                 if (!isNew)
@@ -138,7 +129,7 @@ namespace HotelApp.Services
                 }
                 Messages.SetValueWithCursor();
 
-                string inputRoomNumber = Console.ReadLine();
+                string? inputRoomNumber = Console.ReadLine();
 
                 if (inputRoomNumber.ToLower() == "exit")
                     return room;
@@ -182,11 +173,7 @@ namespace HotelApp.Services
 
         public void DeactivateARoom(Room selectedRoom)
         {
-            Console.Clear();
-            Graphics.ShowMainGraphics();
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine(Graphics.GetHeaderAsString("Avaktivera / Aktivera rum"));
-            Console.ResetColor();
+            Messages.ClearAndShowHeader("Avaktivera / Aktivera rum");
 
             if (selectedRoom.IsActive == true)
                 selectedRoom.IsActive = false;
@@ -196,10 +183,8 @@ namespace HotelApp.Services
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine(selectedRoom.RoomNumber);
             Console.ResetColor();
-
             Console.WriteLine("\n  Tryck på någon tangent för att återgå...");
             Console.ReadKey();
-            _roomController.Value.MenuSwitch();
         }
         public bool ValidateRoom(Room room, bool isNew)
         {
@@ -207,13 +192,12 @@ namespace HotelApp.Services
                 return false;
             if (room.CostPerNight <= 0)
                 return false;
-            if (_dbContext.Rooms.Any(r => r.RoomNumber == room.RoomNumber) && isNew == true)
+            if (_dbContext.Rooms.Any(r => r.RoomNumber == room.RoomNumber) && isNew == true)            //DB
             {
                 Console.WriteLine("\n  Ett rum med detta nummer finns redan.\n  Tryck på valfri tangent för att försöka igen...");
                 Console.ReadKey();
                 return false;
             }
-
             return true;
         }
 
@@ -278,11 +262,7 @@ namespace HotelApp.Services
             decimal costPerNight;
             while (true)
             {
-                Console.Clear();
-                Graphics.ShowMainGraphics();
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine(Graphics.GetHeaderAsString(messageToUseInHeader));
-                Console.ResetColor();
+                Messages.ClearAndShowHeader(messageToUseInHeader);
                 Messages.RequiredInputMessage();
                 Console.WriteLine("   1. Beloppet måste vara en siffra mellan 0 och 100000");
 
@@ -295,7 +275,7 @@ namespace HotelApp.Services
                 }
                 Messages.SetValueWithCursor();
 
-                string costPerNightInput = Console.ReadLine();
+                string? costPerNightInput = Console.ReadLine();
                 if (costPerNightInput.ToLower() == "exit")
                     return room;
 
@@ -377,11 +357,7 @@ namespace HotelApp.Services
             if (isNew)
                 messageToUseInHeader = $"Övriga uppgifter";
 
-            Console.Clear();
-            Graphics.ShowMainGraphics();
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine(Graphics.GetHeaderAsString(messageToUseInHeader));
-            Console.ResetColor();
+            Messages.ClearAndShowHeader(messageToUseInHeader);
             if (!isNew)
                 Console.WriteLine($"  Nuvarande uppgifter:\n  {room.OtherOrDescription}\n\n  Uppdatera övriga uppgifter (valfritt):");
             else
@@ -399,9 +375,9 @@ namespace HotelApp.Services
                 return "  Inga rum i denna kombination";
 
             var roomDescriptions = roomCombination
-                .Select(room => room.ToString()) // Använder ToString() för varje rum
+                .Select(room => room.ToString())
                 .ToList();
-            return string.Join(" & ", roomDescriptions); // Kombinera rummen med " | "
+            return string.Join(" & ", roomDescriptions);
         }
 
     }

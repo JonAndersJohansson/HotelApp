@@ -16,19 +16,19 @@ namespace HotelApp.UI.Menus
     {
         private readonly DisplayList _displayList;
         private readonly IMenu _mainMenu;
-        private readonly Lazy<BookingController> _bookingMenu;
-        private readonly Lazy<CustomerController> _customerMenu;
-        private readonly Lazy<RoomController> _roomMenu;
-        private readonly Lazy<InvoiceController> _invoiceMenu;
+        private readonly Lazy<BookingController> _bookingController;
+        private readonly Lazy<CustomerController> _customerController;
+        private readonly Lazy<RoomController> _roomController;
+        private readonly Lazy<InvoiceController> _invoiceController;
 
         public ServiceMenu(IMenu mainMenu, DisplayList displayList, Lazy<BookingController> bookingMenu, Lazy<CustomerController> customerMenu, Lazy<RoomController> roomMenu, Lazy<InvoiceController> invoiceMenu)
         {
             _displayList = displayList;
             _mainMenu = mainMenu;
-            _bookingMenu = bookingMenu;
-            _customerMenu = customerMenu;
-            _roomMenu = roomMenu;
-            _invoiceMenu = invoiceMenu;
+            _bookingController = bookingMenu;
+            _customerController = customerMenu;
+            _roomController = roomMenu;
+            _invoiceController = invoiceMenu;
         }
         public void MenuSwitch()
         {
@@ -36,29 +36,31 @@ namespace HotelApp.UI.Menus
             {
                 "Bokningar", "Kunder", "Fakturor", "Rum"
             };
-            switch (_displayList.BrowseAList(listServiceMenu, false, Graphics.GetHeaderAsString("Hanteringsmeny ↑/↓/↩"), true))
+            while (true)
             {
-                case 0:
-                    _bookingMenu.Value.MenuSwitch();
-                    break;
-                case 1:
-                    _customerMenu.Value.MenuSwitch();
-                    break;
-                case 2:
-                    _invoiceMenu.Value.MenuSwitch();
-                    break;
-                case 3:
-                    _roomMenu.Value.MenuSwitch();
-                    break;
-                case 4:
-                    _mainMenu.MenuSwitch();
-                    return;
-                default:
-                    Console.WriteLine("Ogiltigt alternativ 'ServiceMenu', tryck valfri tangent för att återgå.");
-                    Console.ReadKey();
-                    _mainMenu.MenuSwitch();
-                    break;
+                switch (_displayList.BrowseAList(listServiceMenu, false, Graphics.GetHeaderAsString("Hanteringsmeny ↑/↓/↩"), true))
+                {
+                    case 0:
+                        _bookingController.Value.MenuSwitch();
+                        break;
+                    case 1:
+                        _customerController.Value.MenuSwitch();
+                        break;
+                    case 2:
+                        _invoiceController.Value.MenuSwitch();
+                        break;
+                    case 3:
+                        _roomController.Value.MenuSwitch();
+                        break;
+                    case 4:
+                        return;
+                    default:
+                        Console.WriteLine("Ogiltigt alternativ 'ServiceMenu', tryck valfri tangent för att återgå.");
+                        Console.ReadKey();
+                        return;
+                }
             }
+            
         }
     }
 }

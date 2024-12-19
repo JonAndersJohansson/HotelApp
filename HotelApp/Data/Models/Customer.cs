@@ -8,7 +8,7 @@
     }
     public class Customer
     {
-        public int CustomerId { get; set; } // sätt till private set
+        public int Id { get; set; } // sätt till private set
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
         public string? Address { get; set; }
@@ -22,7 +22,7 @@
 
         public override string ToString()
         {
-            return $"KundNr: {CustomerId}, {LastName} {FirstName}, {PhoneNumber}, {EmailAddress}, {Membership}-kund";
+            return $"KundNr: {Id}, {LastName} {FirstName}, {PhoneNumber}, {EmailAddress}, {Membership}-kund";
         }
     }
 
