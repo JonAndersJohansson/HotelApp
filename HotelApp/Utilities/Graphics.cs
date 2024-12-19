@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HotelApp.Utilities
+﻿namespace HotelApp.Utilities
 {
     public static class Graphics
     {
@@ -33,15 +27,5 @@ namespace HotelApp.Utilities
 
             return $"║{centeredText}║\n╚═══════════════════════════════════════════════════════════════════════════════════════╝";
         }
-        //public static string GetHeaderAsString(string textToDisplay)
-        //{
-        //    int totalLength = 87;
-        //    int padding = totalLength - textToDisplay.Length;
-        //    int leftPadding = padding / 2;
-        //    int rightPadding = padding - leftPadding;
-        //    string centeredText = new string(' ', leftPadding) + textToDisplay + new string(' ', rightPadding);
-
-        //    return $"║{centeredText}║\n╚═══════════════════════════════════════════════════════════════════════════════════════╝";
-        //}
     }
 }

@@ -1,15 +1,8 @@
-﻿using HotelApp.Services;
-using HotelApp.Data.Models;
+﻿using HotelApp.Data.Models;
 using HotelApp.Services.InvoiceServices;
 using HotelApp.UI;
 using HotelApp.UI.Menus;
 using HotelApp.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HotelApp.Controllers
 {

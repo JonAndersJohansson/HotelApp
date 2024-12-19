@@ -46,7 +46,6 @@ namespace HotelApp.Utilities
         {
             var calendarContent = new StringWriter();
 
-            // Kalenderhuvud
             calendarContent.WriteLine($"[blue]{selectedDate:MMMM}[/]".ToUpper());
             calendarContent.WriteLine("Mån  Tis  Ons  Tor  Fre  Lör  Sön");
             calendarContent.WriteLine("─────────────────────────────────");
@@ -54,20 +53,17 @@ namespace HotelApp.Utilities
             DateTime firstDayOfMonth = new DateTime(selectedDate.Year, selectedDate.Month, 1);
             int daysInMonth = DateTime.DaysInMonth(selectedDate.Year, selectedDate.Month);
             int startDay = (int)firstDayOfMonth.DayOfWeek;
-            startDay = (startDay == 0) ? 6 : startDay - 1; // Justera för måndag som veckostart
+            startDay = (startDay == 0) ? 6 : startDay - 1;
 
-            // Fyll med tomma platser innan första dagen i månaden
             for (int i = 0; i < startDay; i++)
             {
                 calendarContent.Write("     ");
             }
 
-            // Skriv ut dagarna
             for (int day = 1; day <= daysInMonth; day++)
             {
                 if (day == selectedDate.Day)
                 {
-                    // Siffran 2 sätter minimum bredd (även om 1 siffra)
                     calendarContent.Write($"[blue]{day,2}[/]   ");
                 }
                 else
@@ -75,14 +71,12 @@ namespace HotelApp.Utilities
                     calendarContent.Write($"{day,2}   ");
                 }
 
-                // Gå till nästa rad efter söndag
                 if ((startDay + day) % 7 == 0)
                 {
                     calendarContent.WriteLine();
                 }
             }
 
-            // Skapa en panel med dubbla kanter
             var panel = new Panel(calendarContent.ToString())
             {
                 Border = BoxBorder.Double,

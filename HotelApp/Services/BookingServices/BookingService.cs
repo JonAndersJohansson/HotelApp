@@ -4,17 +4,18 @@ using HotelApp.Services.CustomerServices;
 using HotelApp.Services.InvoiceServices;
 using HotelApp.UI;
 using HotelApp.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelApp.Services.BookingService
 {
     public class BookingService
     {
         private readonly DisplayList _displayList;
-        private readonly ApplicationDbContext_FAKE _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly Lazy<RoomService> _roomService;
         private readonly Lazy<CustomerService> _customerService;
         private readonly Lazy<InvoiceService> _invoiceService;
-        public BookingService(DisplayList displayList, ApplicationDbContext_FAKE dbContext, Lazy<RoomService> roomService, Lazy<CustomerService> customerServices, Lazy<InvoiceService> invoiceService)
+        public BookingService(DisplayList displayList, ApplicationDbContext dbContext, Lazy<RoomService> roomService, Lazy<CustomerService> customerServices, Lazy<InvoiceService> invoiceService)
         {
             _displayList = displayList;
             _dbContext = dbContext;
@@ -251,9 +252,9 @@ namespace HotelApp.Services.BookingService
                 newBooking.ListOfBookingRoomsInBooking.Add(new BookingRoom
                 {
                     Booking = newBooking,
+                    BookingId = newBooking.Id,
                     Room = room,
-                    Id = newBooking.Id,
-                    RoomNumberAsID = room.RoomNumber
+                    RoomId = room.Id,
                 });
             }
 
@@ -382,14 +383,19 @@ namespace HotelApp.Services.BookingService
                 return;
             }
 
-            userInput = userInput.ToLower();
+            DateTime? parsedDate = null;
+            if (DateTime.TryParse(userInput, out DateTime inputDate))
+            {
+                parsedDate = inputDate;
+            }
+
             var matchingBookings = _dbContext.Bookings
                 .Where(b =>
-                    b.CustomerInBooking.FirstName.ToLower().Contains(userInput) ||
-                    b.CustomerInBooking.LastName.ToLower().Contains(userInput) ||
+                    EF.Functions.Like(b.CustomerInBooking.FirstName, $"%{userInput}%") ||
+                    EF.Functions.Like(b.CustomerInBooking.LastName, $"%{userInput}%") ||
                     b.Id.ToString().Contains(userInput) ||
-                    (DateTime.TryParse(userInput, out DateTime inputDate) &&
-                    (b.StartDate.Date == inputDate || b.EndDate.Date == inputDate)))
+                    (parsedDate.HasValue &&
+                    (b.StartDate.Date == parsedDate.Value || b.EndDate.Date == parsedDate.Value)))
                 .ToList();
 
             if (!matchingBookings.Any())

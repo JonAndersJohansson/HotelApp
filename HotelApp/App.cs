@@ -2,18 +2,15 @@
 using HotelApp.Controllers;
 using HotelApp.Data;
 using HotelApp.DI;
+using HotelApp.Services;
 using HotelApp.Services.BookingService;
 using HotelApp.Services.CustomerServices;
 using HotelApp.Services.InvoiceServices;
 using HotelApp.Services.RoomServices;
-using HotelApp.Services;
 using HotelApp.UI;
 using HotelApp.UI.Menus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace HotelApp
 {
@@ -21,6 +18,19 @@ namespace HotelApp
     {
         public void Run()
         {
+            var builder = new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true);
+            var config = builder.Build();
+
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>();
+            var connectionString = config.GetConnectionString("DefaultConnection");
+            options.UseSqlServer(connectionString);
+
+            using (var dbContext = new ApplicationDbContext(options.Options))
+            {
+                var dataInitiaizer = new DataInitializer(dbContext);
+                dataInitiaizer.MigrateAndSeedData();
+            }
+
             Console.InputEncoding = System.Text.Encoding.UTF8;
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             //Console.SetWindowSize(90, 50);
@@ -39,6 +49,8 @@ namespace HotelApp
             var invoiceMenu = myContainer.Resolve<InvoiceController>();
             var roomMenu = myContainer.Resolve<RoomController>();
 
+            var dbContext1 = myContainer.Resolve<ApplicationDbContext>();
+
             var roomService = myContainer.Resolve<RoomService>();
             var roomPropertyService = myContainer.Resolve<RoomPropertySelector>();
 
@@ -51,11 +63,13 @@ namespace HotelApp
             var bookingService = myContainer.Resolve<BookingService>();
 
             var dataInitializer = myContainer.Resolve<DataInitializer>();
-            var dbContext = myContainer.Resolve<ApplicationDbContext_FAKE>();
+
+
+            
 
 
 
-            dataInitializer.MigrateAndSeedData(dbContext);
+
 
             //var inputHandler = myContainer.Resolve<IInputHandler>();
             //var create = myContainer.Resolve<Create>();

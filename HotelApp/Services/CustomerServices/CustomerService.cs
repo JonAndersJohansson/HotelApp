@@ -9,9 +9,9 @@ namespace HotelApp.Services.CustomerServices
     public class CustomerService
     {
         private readonly DisplayList _displayList;
-        private ApplicationDbContext_FAKE _dbContext;
+        private ApplicationDbContext _dbContext;
         private readonly Lazy<CustomerPropertySelector> _customerPropertySelector;
-        public CustomerService(DisplayList displayList, ApplicationDbContext_FAKE dbContext, Lazy<IMenu> mainMenu, Lazy<CustomerPropertySelector> customerPropertySelector)
+        public CustomerService(DisplayList displayList, ApplicationDbContext dbContext, Lazy<IMenu> mainMenu, Lazy<CustomerPropertySelector> customerPropertySelector)
         {
             _displayList = displayList;
             _dbContext = dbContext;

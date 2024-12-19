@@ -9,9 +9,9 @@ namespace HotelApp.Services
     public class RoomService
     {
         private readonly DisplayList _displayList;
-        private ApplicationDbContext_FAKE _dbContext;
+        private ApplicationDbContext _dbContext;
         private readonly Lazy<RoomPropertySelector> _roomPropertySelector;
-        public RoomService(DisplayList displayList, ApplicationDbContext_FAKE dbContext, Lazy<RoomPropertySelector> roomPropertySelector)
+        public RoomService(DisplayList displayList, ApplicationDbContext dbContext, Lazy<RoomPropertySelector> roomPropertySelector)
         {
             _displayList = displayList;
             _dbContext = dbContext;
@@ -25,8 +25,10 @@ namespace HotelApp.Services
             if (isToChange)
                 messageToUseInHeader = "Välj rum att ändra ↑/↓/↩";
 
-            var selectedIndex = _displayList.BrowseAList(_dbContext.Rooms, false, Graphics.GetHeaderAsString(messageToUseInHeader), false);
-            if (selectedIndex >= 0 && selectedIndex < _dbContext.Rooms.Count)
+            List<Room> rooms = _dbContext.Rooms
+                .ToList();
+            var selectedIndex = _displayList.BrowseAList(rooms, false, Graphics.GetHeaderAsString(messageToUseInHeader), false);
+            if (selectedIndex >= 0 && selectedIndex < rooms.Count)
                 SelectRoomByIndex(selectedIndex, isDeactivate, isToChange);
             else if (selectedIndex == -1)
                 return;
@@ -38,7 +40,9 @@ namespace HotelApp.Services
         }
         public void SelectRoomByIndex(int roomIndex, bool isDeactivate, bool isToChange)
         {
-            var selectedRoom = _dbContext.Rooms[roomIndex];
+            List<Room> rooms = _dbContext.Rooms
+                .ToList();
+            var selectedRoom = rooms[roomIndex];
 
             if (isDeactivate && selectedRoom != null)
                 DeactivateARoom(selectedRoom);

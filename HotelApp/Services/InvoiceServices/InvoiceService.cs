@@ -8,15 +8,15 @@ namespace HotelApp.Services.InvoiceServices
     public class InvoiceService
     {
         private readonly DisplayList _displayList;
-        private ApplicationDbContext_FAKE _dbContext;
-        public InvoiceService(DisplayList displayList, ApplicationDbContext_FAKE dbContext)
+        private ApplicationDbContext _dbContext;
+        public InvoiceService(DisplayList displayList, ApplicationDbContext dbContext)
         {
             _displayList = displayList;
             _dbContext = dbContext;
         }
         public void GetAInvoiceFrom100IsPaid(bool isPaid)
         {
-            var top100Invoices = _dbContext.Invoices
+            List<Invoice> top100Invoices = _dbContext.Invoices
                 .Where(i => i.IsPaid == isPaid)
                 .OrderByDescending(i => i.InvoiceDate)
                 .Take(100)
@@ -32,7 +32,7 @@ namespace HotelApp.Services.InvoiceServices
         }
         public void GetAInvoiceFrom100IsOverDue()
         {
-            var top100Invoices = _dbContext.Invoices
+            List<Invoice> top100Invoices = _dbContext.Invoices
                 .Where(i => i.IsOverDue == true)
                 .OrderByDescending(i => i.InvoiceDate)
                 .Take(100)

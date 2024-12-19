@@ -3,17 +3,11 @@ using HotelApp.Controllers;
 using HotelApp.Data;
 using HotelApp.Services;
 using HotelApp.Services.BookingService;
-using HotelApp.Services.BookingServices;
 using HotelApp.Services.CustomerServices;
 using HotelApp.Services.InvoiceServices;
 using HotelApp.Services.RoomServices;
 using HotelApp.UI;
 using HotelApp.UI.Menus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HotelApp.DI
 {
@@ -69,7 +63,7 @@ namespace HotelApp.DI
 
             builder.RegisterType<DataInitializer>()
                     .AsSelf();
-            builder.RegisterType<ApplicationDbContext_FAKE>()
+            builder.RegisterType<ApplicationDbContext>()
                     .SingleInstance();
 
             //builder.RegisterType<InputHandler>()

@@ -1,13 +1,7 @@
 ﻿using HotelApp.Services.BookingService;
-using HotelApp.Services.CustomerServices;
 using HotelApp.UI;
 using HotelApp.UI.Menus;
 using HotelApp.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HotelApp.Controllers
 {
