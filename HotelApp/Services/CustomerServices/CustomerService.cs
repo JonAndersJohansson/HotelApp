@@ -501,14 +501,12 @@ namespace HotelApp.Services.CustomerServices
                     EmailAddress = "undefined"
                 };
 
-                var createdCustomer = _customerPropertySelector.Value.PropertySwitch(blankCustomer, false, true);
+                var createdCustomer = _customerPropertySelector.Value.PropertySwitch(blankCustomer, true, true);
                 return createdCustomer;
             }
             else if (selectedCustomerChoice == 1)
             {
-                var foundCustomer = GetCustomerBySearch();
-                if (foundCustomer == null)
-                    return foundCustomer;
+                return GetCustomerBySearch();
             }
             else
             {
@@ -551,8 +549,7 @@ namespace HotelApp.Services.CustomerServices
                 Console.WriteLine("  Inga kunder hittades som matchar din sökning.\n  Tryck valfri tangent för att återgå...");
                 Console.ReadKey();
             }
-            GetCustomerInSearch(matchingCustomers);
-            return null;
+            return GetCustomerInSearch(matchingCustomers);
         }
 
         private Customer? GetCustomerInSearch(List<Customer> matchingCustomers)

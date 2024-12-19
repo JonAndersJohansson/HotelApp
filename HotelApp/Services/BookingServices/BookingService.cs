@@ -31,9 +31,12 @@ namespace HotelApp.Services.BookingService
 
             while (true)
             {
-                startDate = GetStartDate("Välj INCHECKNING");
+                startDate = GetDateByCalendar("Välj INCHECKNING");
                 if (startDate == DateTime.MinValue)
+                {
+                    Messages.AbortBooking();
                     return;
+                }
                 if (startDate < DateTime.Now.Date)
                 {
                     Console.WriteLine("  Ogiltig incheckningsdatum. Datumet kan inte vara bakåt i tiden.\n  Tryck på valfri tangent för att försöka igen...");
@@ -42,9 +45,12 @@ namespace HotelApp.Services.BookingService
                 }
                 Messages.SuccessfullInput();
 
-                endDate = GetStartDate("Välj UTCHECKNING");
-                if (startDate == DateTime.MinValue)
+                endDate = GetDateByCalendar("Välj UTCHECKNING");
+                if (endDate == DateTime.MinValue)
+                {
+                    Messages.AbortBooking();
                     return;
+                }
                 if (endDate < startDate)
                 {
                     Console.WriteLine("  Ogiltig utcheckningsdatum. Datumet måste vara efter inckeckningsdatum.\n  Tryck på valfri tangent för att försöka igen...");
@@ -95,8 +101,9 @@ namespace HotelApp.Services.BookingService
             Messages.ClearAndShowHeader("Övrig information om bokningen");
             Console.WriteLine("  Ange övrig information om bokningen (valfritt):");
             Console.WriteLine("  Lämna fältet tomt och tryck ENTER om du inte vill ange något.");
-
-            string? otherInfo = Console.ReadLine()?.Trim();
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(2, currentLineCursor);
+            string ? otherInfo = Console.ReadLine()?.Trim();
 
             Messages.SuccessfullInput();
             return otherInfo;
@@ -108,7 +115,7 @@ namespace HotelApp.Services.BookingService
             var customerInNewBooking = _customerService.Value.GetCustomer();
             if (customerInNewBooking == null)
             {
-                Console.WriteLine("  Ingen kund kunde hittas.\n  ryck på valfri tangent för att återgå...");
+                Console.WriteLine("  Ingen kund kunde hittas.\n  Tryck på valfri tangent för att återgå...");
                 Console.ReadKey();
                 Messages.AbortBooking();
                 return;
@@ -342,13 +349,7 @@ namespace HotelApp.Services.BookingService
             }
             return numberOfGuests;
         }
-        public DateTime GetEndDate(string headerMessage)
-        {
-            var selectedEndDate = Calendar.GetDateTimeByCalendar(headerMessage);
-            return selectedEndDate;
-        }
-
-        public DateTime GetStartDate(string headerMessage)
+        public DateTime GetDateByCalendar(string headerMessage)
         {
             var selectedStartDate = Calendar.GetDateTimeByCalendar(headerMessage);
             return selectedStartDate;
@@ -431,7 +432,8 @@ namespace HotelApp.Services.BookingService
             Messages.ClearAndShowHeader("Övrig information om bokningen");
             Console.WriteLine("  Ange övrig information om bokningen (valfritt):");
             Console.WriteLine("  Lämna fältet tomt och tryck ENTER om du inte vill ange något.");
-
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(2, currentLineCursor);
             string? otherInfo = Console.ReadLine()?.Trim();
 
             // Uppdatera booking med den nya informationen

@@ -298,7 +298,7 @@ namespace HotelApp.Services.InvoiceServices
             {
                 Messages.ClearAndShowHeader("Koppla faktura mot boknigsnummer");
                 Messages.RequiredInputMessage();
-                Console.WriteLine("   1. Bokningnummer är possitiva. \n\nSkriv in bokningsnummret du vill koppla till fakturan.");
+                Console.WriteLine("   1. Bokningnummer är possitiva. \n\n  Skriv in bokningsnummret du vill koppla till fakturan.");
                 Messages.SetValueWithCursor();
 
                 string? bookingNumberInput = Console.ReadLine();

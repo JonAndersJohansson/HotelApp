@@ -16,7 +16,7 @@ namespace HotelApp.Services.CustomerServices
             _displayList = displayList;
             _customerService = customerService;
         }
-        public Customer? PropertySwitch(Customer customer, bool isNewFromCustomerMenu, bool isNewFromBooking)
+        public Customer? PropertySwitch(Customer customer, bool isNew, bool isNewFromBooking)
         {
             List<string> menuListInCustomerPropertySelector = new List<string>
             {
@@ -31,31 +31,31 @@ namespace HotelApp.Services.CustomerServices
                 switch (_displayList.BrowseAList(menuListInCustomerPropertySelector, false, Graphics.GetHeaderAsString(messageToUseInHeader), true))
                 {
                     case 0:
-                        _customerService.GetFirstName(customer, isNewFromCustomerMenu);
+                        _customerService.GetFirstName(customer, isNew);
                         break;
                     case 1:
-                        _customerService.GetLastName(customer, isNewFromCustomerMenu);
+                        _customerService.GetLastName(customer, isNew);
                         break;
                     case 2:
-                        _customerService.GetAddress(customer, isNewFromCustomerMenu);
+                        _customerService.GetAddress(customer, isNew);
                         break;
                     case 3:
-                        _customerService.GetPhoneNumber(customer, isNewFromCustomerMenu);
+                        _customerService.GetPhoneNumber(customer, isNew);
                         break;
                     case 4:
-                        _customerService.GetEmail(customer, isNewFromCustomerMenu);
+                        _customerService.GetEmail(customer, isNew);
                         break;
                     case 5:
-                        _customerService.GetMembership(customer, isNewFromCustomerMenu);
+                        _customerService.GetMembership(customer, isNew);
                         break;
                     case 6:
-                        _customerService.GetDateOfBirth(customer, isNewFromCustomerMenu);
+                        _customerService.GetDateOfBirth(customer, isNew);
                         break;
                     case 7:
-                        _customerService.GetOtherInfo(customer, isNewFromCustomerMenu);
+                        _customerService.GetOtherInfo(customer, isNew);
                         break;
                     case 8:
-                        if (_customerService.ValidateCustomer(customer, isNewFromCustomerMenu) == true)
+                        if (_customerService.ValidateCustomer(customer, isNew) == true)
                         {
                             if (isNewFromBooking)
                             {

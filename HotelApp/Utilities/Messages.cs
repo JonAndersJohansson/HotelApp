@@ -26,7 +26,7 @@ namespace HotelApp.Utilities
         public static void SuccessfullInput()
         {
             Console.ForegroundColor= ConsoleColor.Green;
-            Console.WriteLine("\n  Värde tillagt. Glöm inte spara.");
+            Console.WriteLine("\n  Värde tillagt.");
             Console.ResetColor();
             Thread.Sleep(1000);
         }

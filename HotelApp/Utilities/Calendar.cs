@@ -11,20 +11,14 @@ namespace HotelApp.Utilities
     {
         public static DateTime GetDateTimeByCalendar(string headerCalendar) 
         {
-            // Startdatum (början av månaden)
             DateTime currentDate = DateTime.Now;
             DateTime selectedDate = new DateTime(currentDate.Year, currentDate.Month, 1);
 
             while (true)
             {
-                Console.Clear();
-                Graphics.ShowMainGraphics();
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine(Graphics.GetHeaderAsString(headerCalendar));
-                Console.ResetColor();
+                Messages.ClearAndShowHeader(headerCalendar);
                 RenderCalendar(selectedDate);
 
-                // Läsa användarens tangent
                 var key = Console.ReadKey(true).Key;
 
                 switch (key)
@@ -42,7 +36,6 @@ namespace HotelApp.Utilities
                         selectedDate = selectedDate.AddDays(7);
                         break;
                     case ConsoleKey.Enter:
-                        AnsiConsole.MarkupLine($"\n  Du valde: [blue]{selectedDate:yyyy-MM-dd}[/]");
                         return selectedDate;
                     case ConsoleKey.Escape:
                         return DateTime.MinValue;
@@ -97,8 +90,7 @@ namespace HotelApp.Utilities
             };
 
             AnsiConsole.Write(panel);
-            Console.WriteLine();
-            AnsiConsole.MarkupLine("                 [blue]↑/↓/↩[/]");
+            AnsiConsole.MarkupLine("            [blue]↑/↓/←/→/↩/[/][red]ESC[/]");
         }
     }
 }
