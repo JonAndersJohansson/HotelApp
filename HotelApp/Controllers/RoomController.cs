@@ -39,17 +39,17 @@ namespace HotelApp.Controllers
                 switch (_displayList.BrowseAList(listRoomMenu, false, Graphics.GetHeaderAsString("Meny Rum ↑/↓/↩"), true))
                 {
                     case 0:
-                        _roomService.GetRoomIndex(false, false);
+                        _roomService.SelectRoomIndex(false, false);
                         break;
                     case 1:
                         var newRoom = new Room { RoomNumber = -1, CostPerNight = -1, RoomType = BedSize.Single };
                         _roomPropertySelector.Value.PropertySwitch(newRoom, true);
                         break;
                     case 2:
-                        _roomService.GetRoomIndex(false, true);
+                        _roomService.SelectRoomIndex(false, true);
                         break;
                     case 3:
-                        _roomService.GetRoomIndex(true, false);
+                        _roomService.SelectRoomIndex(true, false);
                         break;
                     case 4:
                         return;

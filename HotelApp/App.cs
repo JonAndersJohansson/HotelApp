@@ -33,6 +33,7 @@ namespace HotelApp
             var displayList = myContainer.Resolve<DisplayList>();
             var mainMenu = myContainer.Resolve<IMenu>();
             var serviceMenu = myContainer.Resolve<ServiceMenu>();
+            var searchMenu = myContainer.Resolve<SearchMenu>();
             var bookingMenu = myContainer.Resolve<BookingController>();
             var customerMenu = myContainer.Resolve<CustomerController>();
             var invoiceMenu = myContainer.Resolve<InvoiceController>();

@@ -17,30 +17,32 @@ namespace HotelApp.UI.Menus
         private readonly DisplayList _displayList;
         private readonly Lazy<ServiceMenu> _serviceMenu;
         private readonly BookingService _bookingService;
-        public MainMenu(DisplayList displayList, Lazy<ServiceMenu> serviceMenu, BookingService bookingService)
+        private readonly SearchMenu _searchMenu;
+        public MainMenu(DisplayList displayList, Lazy<ServiceMenu> serviceMenu, BookingService bookingService, SearchMenu searchMenu)
         {
             _displayList = displayList;
             _serviceMenu = serviceMenu;
             _bookingService = bookingService;
+            _searchMenu = searchMenu;
         }
         public void MenuSwitch()
         {
             List<string> listMainMenu = new List<string>
             {
-                "Sök", "Ny Bokning", "Visa nuvarande gäster", "Hantera - Kunder/Bokningar/Rum/Fakturor", "Avsluta"
+                "Sök & Visa", "Ny Bokning", "Visa nuvarande gäster", "Hantera - Kunder/Bokningar/Rum/Fakturor", "Avsluta"
             };
             while (true)
             {
                 switch (_displayList.BrowseAList(listMainMenu, true, Graphics.GetHeaderAsString("Huvudmeny ↑/↓/↩"), true))
                 {
                     case 0:
-                        //Sök 
+                        _searchMenu.MenuSwitch();
                         break;
                     case 1:
                         _bookingService.CheckAvailability();
                         break;
                     case 2:
-                        // Besökande
+                        _bookingService.SearchCurrentVisitors();
                         break;
                     case 3:
                         _serviceMenu.Value.MenuSwitch();
@@ -51,7 +53,6 @@ namespace HotelApp.UI.Menus
                     default:
                         Console.WriteLine("Ogiltigt alternativ 'MainMenu', tryck valfri tangent för att återgå.");
                         Console.ReadKey();
-                        MenuSwitch();
                         break;
                 }
             }

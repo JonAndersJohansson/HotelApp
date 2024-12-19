@@ -39,7 +39,7 @@ namespace HotelApp.Controllers
                 switch (_displayList.BrowseAList(listInvoiceMenu, false, Graphics.GetHeaderAsString("Meny Fakturor ↑/↓/↩"), true))
                 {
                     case 0:
-                        _invoiceService.GetListOfInvoiceBySearch(false, false);
+                        _invoiceService.SearchInvoiceToList(false, false);
                         break;
                     case 1:
                         _invoiceService.GetAInvoiceFrom100IsPaid(true);
@@ -55,10 +55,10 @@ namespace HotelApp.Controllers
                         _invoicePropertySelector.Value.PropertySwitch(newInvoice);
                         break;
                     case 5:
-                        _invoiceService.GetListOfInvoiceBySearch(false, true);
+                        _invoiceService.SearchInvoiceToList(false, true);
                         break;
                     case 6:
-                        _invoiceService.GetListOfInvoiceBySearch(true, false);
+                        _invoiceService.SearchInvoiceToList(true, false);
                         break;
                     case 7:
                         return;

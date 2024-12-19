@@ -17,7 +17,7 @@ namespace HotelApp.Services
             _dbContext = dbContext;
             _roomPropertySelector = roomPropertySelector;
         }
-        public void GetRoomIndex(bool isDeactivate, bool isToChange)
+        public void SelectRoomIndex(bool isDeactivate, bool isToChange)
         {
             string messageToUseInHeader = "Välj rum för att visa all info ↑/↓/↩";
             if (isDeactivate)
@@ -27,18 +27,18 @@ namespace HotelApp.Services
 
             var selectedIndex = _displayList.BrowseAList(_dbContext.Rooms, false, Graphics.GetHeaderAsString(messageToUseInHeader), false);
             if (selectedIndex >= 0 && selectedIndex < _dbContext.Rooms.Count)
-                GetARoom(selectedIndex, isDeactivate, isToChange);
+                SelectRoomByIndex(selectedIndex, isDeactivate, isToChange);
             else if (selectedIndex == -1)
                 return;
             else
             {
-                Console.WriteLine("  Fel: Ogiltigt värde i GetRoomIndex.\n  Tryck valfri tangent för att återgå...");
+                Console.WriteLine("  Fel: Ogiltigt värde i SelectRoomIndex.\n  Tryck valfri tangent för att återgå...");
                 Console.ReadKey();
             }
         }
-        public void GetARoom(int roomIndex, bool isDeactivate, bool isToChange)
+        public void SelectRoomByIndex(int roomIndex, bool isDeactivate, bool isToChange)
         {
-            var selectedRoom = _dbContext.Rooms[roomIndex]; /// DB
+            var selectedRoom = _dbContext.Rooms[roomIndex];
 
             if (isDeactivate && selectedRoom != null)
                 DeactivateARoom(selectedRoom);
@@ -48,7 +48,7 @@ namespace HotelApp.Services
                 ReadOneRoom(selectedRoom);
             else
             {
-                Console.WriteLine("  Fel: Ogiltigt värde GetARoom.\n  Tryck valfri tangent för att återgå...");
+                Console.WriteLine("  Fel: Ogiltigt värde SelectRoomByIndex.\n  Tryck valfri tangent för att återgå...");
                 Console.ReadKey();
             }
         }

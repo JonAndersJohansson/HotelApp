@@ -49,7 +49,7 @@ namespace HotelApp.Services.InvoiceServices
             }
         }
 
-        public void GetListOfInvoiceBySearch(bool isToCancel, bool isToRegistratePay)
+        public void SearchInvoiceToList(bool isToCancel, bool isToRegistratePay)
         {
             string messageToUseInHeader = "Sök Faktura";
             if (isToCancel) messageToUseInHeader = "Sök faktura att ANNULERA";
@@ -92,10 +92,10 @@ namespace HotelApp.Services.InvoiceServices
                 Console.ReadKey();
                 return;
             }
-            GetInvoiceInList(matchingInvoices, isToCancel, isToRegistratePay);
+            SelectInvoiceInList(matchingInvoices, isToCancel, isToRegistratePay);
         }
 
-        public void GetInvoiceInList(List<Invoice> matchingInvoices, bool isToCancel, bool isToRegistratePay)
+        public void SelectInvoiceInList(List<Invoice> matchingInvoices, bool isToCancel, bool isToRegistratePay)
         {
             string messageToUseInHeader = "Sökresultat, välj faktura för att visa info ↑/↓/↩";
             if (isToCancel) messageToUseInHeader = "Sökresultat, välj faktura för att annulera ↑/↓/↩";
@@ -113,7 +113,7 @@ namespace HotelApp.Services.InvoiceServices
                 return;
             else
             {
-                Console.WriteLine("  Fel: inget index kunde hittas i GetInvoiceInList.\n  Tryckvalfri tangent för att återgå...");
+                Console.WriteLine("  Fel: inget index kunde hittas i SelectInvoiceInList.\n  Tryckvalfri tangent för att återgå...");
                 Console.ReadKey();
             }
         }

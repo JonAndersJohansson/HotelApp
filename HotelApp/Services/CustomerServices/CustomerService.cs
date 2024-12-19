@@ -17,7 +17,7 @@ namespace HotelApp.Services.CustomerServices
             _dbContext = dbContext;
             _customerPropertySelector = customerPropertySelector;
         }
-        public void SearchCustomer(bool isDeactivate, bool isToChange)
+        public void SearchCustomerToList(bool isDeactivate, bool isToChange)
         {
             string messageToUseInHeader = "Sök kund";
             if (isDeactivate)
@@ -56,10 +56,10 @@ namespace HotelApp.Services.CustomerServices
                 Console.WriteLine("  Inga kunder hittades som matchar din sökning.\n  Tryck valfri tangent för att återgå...");
                 Console.ReadKey();
             }
-            SelectACustomerFromSearch(matchingCustomers, isDeactivate, isToChange);
+            SelectCustomerFromList(matchingCustomers, isDeactivate, isToChange);
             return;
         }
-        public void SelectACustomerFromSearch(List<Customer> matchingCustomers, bool isDeactivate, bool isToChange)
+        public void SelectCustomerFromList(List<Customer> matchingCustomers, bool isDeactivate, bool isToChange)
         {
             string messageToUseInHeader = "Sökresultat, välj kund för att visa all info ↑/↓/↩";
             if (isDeactivate)
@@ -78,7 +78,7 @@ namespace HotelApp.Services.CustomerServices
                 return;
             else
             {
-                Console.WriteLine("  Fel: Ogiltigt val i SelectACustomerFromSearch.\n  Tryck valfri tangent för att fortsätta...");
+                Console.WriteLine("  Fel: Ogiltigt val i SelectCustomerFromList.\n  Tryck valfri tangent för att fortsätta...");
                 Console.ReadKey();
             }
         }

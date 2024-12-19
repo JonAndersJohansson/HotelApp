@@ -37,7 +37,7 @@ namespace HotelApp.Controllers
                 switch (_displayList.BrowseAList(listBookingMenu, false, Graphics.GetHeaderAsString("Meny Bokningar ↑/↓/↩"), true))
                 {
                     case 0:
-                        _bookingService.GetListOfBookingsBySearch(false, false);
+                        _bookingService.SearchBookingToList(false, false);
                         break;
                     case 1:
                         _bookingService.CheckAvailability();
@@ -49,10 +49,10 @@ namespace HotelApp.Controllers
                         _bookingService.Get100ByStartDate(false);
                         break;
                     case 4:
-                        _bookingService.GetListOfBookingsBySearch(false, true);
+                        _bookingService.SearchBookingToList(false, true);
                         break;
                     case 5:
-                        _bookingService.GetListOfBookingsBySearch(true, false);
+                        _bookingService.SearchBookingToList(true, false);
                         break;
                     case 6:
                         _serviceMenu.Value.MenuSwitch();

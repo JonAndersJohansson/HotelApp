@@ -42,17 +42,17 @@ namespace HotelApp.Controllers
                 switch (_displayList.BrowseAList(listCustomerMenu, false, Graphics.GetHeaderAsString("Meny Kunder ↑/↓/↩"), true))
                 {
                     case 0:
-                        _customerService.SearchCustomer(false, false);
+                        _customerService.SearchCustomerToList(false, false);
                         break;
                     case 1:
                         var newCustomer = new Customer { FirstName = "undefined", LastName = "undefined", PhoneNumber = "undefined", EmailAddress = "undefined" };
                         _customerPropertySelector.Value.PropertySwitch(newCustomer, true, false);
                         return;
                     case 2:
-                        _customerService.SearchCustomer(false, true);
+                        _customerService.SearchCustomerToList(false, true);
                         break;
                     case 3:
-                        _customerService.SearchCustomer(true, false);
+                        _customerService.SearchCustomerToList(true, false);
                         break;
                     case 4:
                         _serviceMenu.Value.MenuSwitch();

@@ -30,6 +30,9 @@ namespace HotelApp.DI
             builder.RegisterType<ServiceMenu>()
                     .AsSelf()
                     .SingleInstance();
+            builder.RegisterType<SearchMenu>()
+                    .AsSelf()
+                    .SingleInstance();
             builder.RegisterType<BookingController>()
                     .AsSelf()
                     .SingleInstance();

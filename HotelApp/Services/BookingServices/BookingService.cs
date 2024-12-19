@@ -355,9 +355,9 @@ namespace HotelApp.Services.BookingService
             return selectedStartDate;
         }
 
-        public void GetListOfBookingsBySearch(bool isCancel, bool isToUpdateInfo)
+        public void SearchBookingToList(bool isCancel, bool isToUpdateInfo)
         {
-            string messageToUseInHeader = "Sök kund";
+            string messageToUseInHeader = "Sök bokning";
             if (isCancel)
                 messageToUseInHeader = "Sök för att avboka en bokning";
             if (isToUpdateInfo)
@@ -399,10 +399,10 @@ namespace HotelApp.Services.BookingService
                 return;
             }
             else
-                GetABookingInList(matchingBookings, isCancel, isToUpdateInfo);
+                SelectBookingInList(matchingBookings, isCancel, isToUpdateInfo);
         }
 
-        public void GetABookingInList(List<Booking> matchingBookings, bool isToCancel, bool isToUpdateInfo)
+        public void SelectBookingInList(List<Booking> matchingBookings, bool isToCancel, bool isToUpdateInfo)
         {
             string messageToUseInHeader = "Sökresultat, välj bokning för att visa all info ↑/↓/↩";
             if (isToCancel)
@@ -421,7 +421,7 @@ namespace HotelApp.Services.BookingService
                 return;
             else
             {
-                Console.WriteLine("  Fel: Ogiltigt värde i GetABookingInList.\n  Tryck på valfri tangent för att återgå...");
+                Console.WriteLine("  Fel: Ogiltigt värde i SelectBookingInList.\n  Tryck på valfri tangent för att återgå...");
                 Console.ReadKey();
                 return;
             }
@@ -518,6 +518,53 @@ namespace HotelApp.Services.BookingService
                 }
             }
             Console.WriteLine($"  Bokningen med ID {booking.Id} och dess kopplade fakturor har annullerats.");
+        }
+
+        public void SearchCurrentVisitors()
+        {
+            DateTime today = DateTime.Now.Date;
+
+            var currentBookings = _dbContext.Bookings
+                .Where(b => b.StartDate <= today && b.EndDate >= today && !b.IsCancelled)
+                .ToList();
+
+            if (!currentBookings.Any())
+            {
+                Console.WriteLine("\n  Inga gäster bor på hotellet just nu :(");
+                Console.ReadKey();
+                return;
+            }
+
+            ReadCurrentVisitors(currentBookings);
+        }
+        private void ReadCurrentVisitors(List<Booking> currentBookings)
+        {
+            Messages.ClearAndShowHeader("Nuvarande besökare");
+            int visitors = 0;
+            foreach (var booking in currentBookings)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"  Kund: {booking.CustomerInBooking.FirstName} {booking.CustomerInBooking.LastName}, Antal gäster: {booking.NumberOfGuests}, INcheck: {booking.StartDate:yyyy-MM-dd}, UTcheck: {booking.EndDate:yyyy-MM-dd}");
+
+                if (booking.ListOfBookingRoomsInBooking != null && booking.ListOfBookingRoomsInBooking.Any())
+                {
+                    Console.Write("  Rum: ");
+                    foreach (var bookingRoom in booking.ListOfBookingRoomsInBooking)
+                    {
+                        var room = bookingRoom.Room;
+                        Console.Write($"{room.RoomNumber} ");
+                    }
+                }
+                Console.ResetColor();
+                Console.WriteLine("\n  -");
+                visitors += (int)booking.NumberOfGuests;
+            }
+            Console.Write("  Totalt antal gäster: ");
+            Console.ForegroundColor= ConsoleColor.Green;
+            Console.WriteLine(visitors);
+            Console.ResetColor();
+            Console.WriteLine("\n  Tryck på valfri tangent för att återgå till menyn...");
+            Console.ReadKey();
         }
     }
 }
