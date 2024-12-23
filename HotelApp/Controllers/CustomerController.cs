@@ -6,9 +6,6 @@ using HotelApp.Utilities;
 
 namespace HotelApp.Controllers
 {
-    /// <summary>
-    /// Klassen hanterar undermenyn CustomerMenu
-    /// </summary>
     public class CustomerController : IMenu
     {
         private readonly DisplayList _displayList;
@@ -27,7 +24,7 @@ namespace HotelApp.Controllers
         {
             List<string> listCustomerMenu = new List<string>
             {
-                "Sök & visa en kund", "Lägg till en ny kund", "Sök & ändra kundinformation på befintlig kund", "Sök & ta bort en kund (OM INGA BOKNINGAR FINNS KOPPLADE!!!)"
+                "Sök & visa en kund", "Lägg till en ny kund", "Sök & ändra kundinformation på befintlig kund", "Sök & ta bort en kund"
             };
             while (true)
             {

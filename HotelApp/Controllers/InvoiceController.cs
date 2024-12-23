@@ -11,21 +11,18 @@ namespace HotelApp.Controllers
     {
         private readonly DisplayList _displayList;
         private readonly InvoiceService _invoiceService;
-        private readonly Lazy<InvoicePropertySelector> _invoicePropertySelector;
 
-
-        public InvoiceController(DisplayList displayList, InvoiceService invoiceService, Lazy<InvoicePropertySelector> invoicePropertySelector)
+        public InvoiceController(DisplayList displayList, InvoiceService invoiceService)
         {
             _displayList = displayList;
             _invoiceService = invoiceService;
-            _invoicePropertySelector = invoicePropertySelector;
         }
         
         public void MenuSwitch()
         {
             List<string> listInvoiceMenu = new List<string>
             {
-                "Sök & Visa en faktura", "Visa 100 senaste betalda fakturorna (och välj en)", "Visa 100 senaste obetalda fakturorna (och välj en)", "Visa 100 senaste förfallna fakturorna (och välj en)", "Skapa en faktura (och koppla till bokning)", "Sök & registrera betalning på befintlig faktura", "Sök & annulera faktura"
+                "Sök & Visa en faktura", "Visa 100 senaste betalda fakturorna (och välj en)", "Visa 100 senaste obetalda fakturorna (och välj en)", "Visa 100 senaste förfallna fakturorna (och välj en)", "Sök & registrera betalning på befintlig faktura", "Sök & annulera faktura"
             };
             while (true)
             {
@@ -44,16 +41,12 @@ namespace HotelApp.Controllers
                         _invoiceService.GetAInvoiceFrom100IsOverDue();
                         break;
                     case 4:
-                        var newInvoice = new Invoice { InvoiceDate = DateTime.MinValue, TotalAmount = 0, IsPaid = false, BookingId = 0, DueDate = DateTime.MinValue };
-                        _invoicePropertySelector.Value.PropertySwitch(newInvoice);
-                        break;
-                    case 5:
                         _invoiceService.SearchInvoiceToList(false, true);
                         break;
-                    case 6:
+                    case 5:
                         _invoiceService.SearchInvoiceToList(true, false);
                         break;
-                    case 7:
+                    case 6:
                         return;
                     default:
                         Console.WriteLine("Ogiltigt alternativ 'InvoiceMenu', tryck valfri tangent för att återgå.");

@@ -12,18 +12,21 @@ namespace HotelApp.Data
         }
         public void MigrateAndSeedData()
         {
+            _dbContext.Database.EnsureCreated();
+
             SeedCustomers();
             SeedRooms();
             SeedBookings();
-            SeedInvoices();
             SeedBookingRooms();
-            LinkRelationships();
+            SeedInvoices();
+            //LinkRelationships();
             _dbContext.SaveChanges();
         }
 
         private void SeedCustomers()
         {
-            // Skapa 4 kunder
+            if (_dbContext.Customers.Any())
+                return;
             var customer1 = new Customer
             {
                 FirstName = "Anna",
@@ -85,6 +88,8 @@ namespace HotelApp.Data
 
         private void SeedRooms()
         {
+            if (_dbContext.Rooms.Any())
+                return;
             var room1 = new Room
             {
                 RoomNumber = 101,
@@ -113,7 +118,7 @@ namespace HotelApp.Data
             {
                 RoomNumber = 103,
                 RoomType = BedSize.Double,
-                NumberOfPossibleExtraBeds = 2,
+                NumberOfPossibleExtraBeds = 3,
                 CostPerNight = 1200m,
                 IsDisabilityFriendly = true,
                 OtherOrDescription = "Havsutsikt",
@@ -139,6 +144,8 @@ namespace HotelApp.Data
 
         private void SeedBookings()
         {
+            if (_dbContext.Bookings.Any())
+                return;
             var customer1 = _dbContext.Customers.First(c => c.FirstName == "Anna");
             var booking1 = new Booking
             {
@@ -188,83 +195,14 @@ namespace HotelApp.Data
                 ListOfBookingRoomsInBooking = new List<BookingRoom>()
             };
 
-            var booking5 = new Booking
-            {
-                CustomerId = customer3.Id,
-                CustomerInBooking = customer3,
-                StartDate = DateTime.Now.AddDays(-30),
-                EndDate = DateTime.Now.AddDays(-27),
-                NumberOfGuests = 1,
-                IsCancelled = false,
-                ListOfBookingRoomsInBooking = new List<BookingRoom>()
-            };
-            var booking6 = new Booking
-            {
-                CustomerId = customer3.Id,
-                CustomerInBooking = customer3,
-                StartDate = DateTime.Now.AddDays(-40),
-                EndDate = DateTime.Now.AddDays(-37),
-                NumberOfGuests = 1,
-                IsCancelled = false,
-                ListOfBookingRoomsInBooking = new List<BookingRoom>()
-            };
-            var booking7 = new Booking
-            {
-                CustomerId = customer3.Id,
-                CustomerInBooking = customer3,
-                StartDate = DateTime.Now.AddDays(-50),
-                EndDate = DateTime.Now.AddDays(-48),
-                NumberOfGuests = 1,
-                IsCancelled = false,
-                ListOfBookingRoomsInBooking = new List<BookingRoom>()
-            };
-            var booking8 = new Booking
-            {
-                CustomerId = customer3.Id,
-                CustomerInBooking = customer3,
-                StartDate = DateTime.Now.AddDays(-10),
-                EndDate = DateTime.Now.AddDays(-8),
-                NumberOfGuests = 2,
-                IsCancelled = false,
-                ListOfBookingRoomsInBooking = new List<BookingRoom>()
-            };
-            var booking9 = new Booking
-            {
-                CustomerId = customer3.Id,
-                CustomerInBooking = customer3,
-                StartDate = DateTime.Now.AddDays(-10),
-                EndDate = DateTime.Now.AddDays(-12),
-                NumberOfGuests = 2,
-                IsCancelled = false,
-                ListOfBookingRoomsInBooking = new List<BookingRoom>()
-            };
-            var booking10 = new Booking
-            {
-                CustomerId = customer3.Id,
-                CustomerInBooking = customer3,
-                StartDate = DateTime.Now.AddDays(-20),
-                EndDate = DateTime.Now.AddDays(-23),
-                NumberOfGuests = 1,
-                IsCancelled = false,
-                ListOfBookingRoomsInBooking = new List<BookingRoom>()
-            };
-            var booking11 = new Booking
-            {
-                CustomerId = customer3.Id,
-                CustomerInBooking = customer3,
-                StartDate = DateTime.Now.AddDays(33),
-                EndDate = DateTime.Now.AddDays(35),
-                NumberOfGuests = 1,
-                IsCancelled = false,
-                ListOfBookingRoomsInBooking = new List<BookingRoom>()
-            };
-
-            _dbContext.Bookings.AddRange(booking1, booking2, booking3, booking4, booking5, booking6, booking7, booking8, booking9, booking10, booking11);
+            _dbContext.Bookings.AddRange(booking1, booking2, booking3, booking4);
             _dbContext.SaveChanges();
         }
 
         private void SeedInvoices()
         {
+            if (_dbContext.Invoices.Any())
+                return;
             var customer1 = _dbContext.Customers.First(c => c.FirstName == "Anna");
             var booking1 = _dbContext.Bookings.FirstOrDefault(b => b.CustomerId == customer1.Id);
             var invoice1 = new Invoice
@@ -313,7 +251,7 @@ namespace HotelApp.Data
                 TotalAmount = 4000m,
                 DueDate = booking4.StartDate.AddDays(30),
                 InvoiceDate = booking4.StartDate,
-                IsOverDue = true,
+                IsOverDue = false,
                 IsPaid = false
             };
 
@@ -323,12 +261,13 @@ namespace HotelApp.Data
 
         private void SeedBookingRooms()
         {
+            if (_dbContext.BookingRooms.Any())
+                return;
             if (!_dbContext.Bookings.Any() || !_dbContext.Rooms.Any())
             {
                 throw new InvalidOperationException("Bookings or Rooms lists are empty. Please seed them first.");
             }
 
-            // Skapa BookingRoom-objekt
             var bookingRoom1 = new BookingRoom
             {
                 BookingId = _dbContext.Bookings.First().Id,
@@ -369,10 +308,18 @@ namespace HotelApp.Data
 
         private void LinkRelationships()
         {
-            foreach (var bookingRoom in _dbContext.BookingRooms)
+            // Hämta alla entiteter från databasen i minnet
+            var bookings = _dbContext.Bookings.ToList();
+            var customers = _dbContext.Customers.ToList();
+            var rooms = _dbContext.Rooms.ToList();
+            var bookingRooms = _dbContext.BookingRooms.ToList();
+            var invoices = _dbContext.Invoices.ToList();
+
+            // Länka BookingRooms till Room och Booking
+            foreach (var bookingRoom in bookingRooms)
             {
-                var room = _dbContext.Rooms.FirstOrDefault(r => r.Id == bookingRoom.RoomId);
-                var booking = _dbContext.Bookings.FirstOrDefault(b => b.Id == bookingRoom.Id);
+                var room = rooms.FirstOrDefault(r => r.Id == bookingRoom.RoomId);
+                var booking = bookings.FirstOrDefault(b => b.Id == bookingRoom.BookingId);
 
                 if (room != null)
                 {
@@ -384,16 +331,27 @@ namespace HotelApp.Data
                     booking.ListOfBookingRoomsInBooking.Add(bookingRoom);
                 }
             }
-            foreach (var booking in _dbContext.Bookings)
+
+            // Länka Bookings till Customers och Invoices
+            foreach (var booking in bookings)
             {
-                var customer = _dbContext.Customers.FirstOrDefault(c => c.Id == booking.CustomerId);
+                var customer = customers.FirstOrDefault(c => c.Id == booking.CustomerId);
+                var invoice = invoices.FirstOrDefault(i => i.BookingId == booking.Id);
 
                 if (customer != null)
                 {
                     customer.ListOfBookingsInCustomer.Add(booking);
+                    booking.CustomerInBooking = customer; // Koppla tillbaka till Booking
+                }
+
+                if (invoice != null)
+                {
+                    booking.InvoiceInBooking = invoice; // Koppla fakturan till bokningen
                 }
             }
+
             _dbContext.SaveChanges();
         }
+
     }
 }

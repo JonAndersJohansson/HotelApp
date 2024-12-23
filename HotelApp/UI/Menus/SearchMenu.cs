@@ -47,7 +47,7 @@ namespace HotelApp.UI.Menus
                         _invoiceService.SearchInvoiceToList(false, false);
                         break;
                     case 3:
-                        _roomService.SelectRoomIndex(false, false);
+                        _roomService.SelectIndexInRooms(false, false);
                         break;
                     case 4:
                         return;

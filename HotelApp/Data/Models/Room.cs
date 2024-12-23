@@ -21,8 +21,7 @@ namespace HotelApp.Data.Models
 
         public override string ToString()
         {
-            return $"{RoomNumber} - {RoomType}, Pris: {CostPerNight}, Möjliga extrasängar: {NumberOfPossibleExtraBeds}";
+            return $"{RoomNumber} - {RoomType}, Pris: {CostPerNight}, Möjliga extrasängar: {NumberOfPossibleExtraBeds} - {(IsActive ? "AKTIV" : "AVSTÄNGD")}";
         }
     }
-
 }

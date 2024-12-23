@@ -24,7 +24,7 @@ namespace HotelApp.Controllers
         {
             List<string> listBookingMenu = new List<string>
             {
-                "Sök & visa bokning", "Skapa ny bokning", "Visa 100 tidigare bokningar", "Visa 100 kommande bokningar", "Lägg till Övrig info på bokning", "Avboka en bokning"
+                "Sök & visa bokning", "Skapa ny bokning", "Visa 100 tidigare bokningar", "Visa 100 kommande bokningar", "Ändra en bokning", "Avboka en bokning"
             };
             while (true)
             {

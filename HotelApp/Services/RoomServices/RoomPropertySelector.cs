@@ -1,14 +1,7 @@
-﻿using HotelApp.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HotelApp.Services;
-using HotelApp.Utilities;
+﻿using HotelApp.Controllers;
 using HotelApp.Data.Models;
-using HotelApp.Controllers;
-using HotelApp.UI.Menus;
+using HotelApp.UI;
+using HotelApp.Utilities;
 
 namespace HotelApp.Services.RoomServices
 {
@@ -45,7 +38,7 @@ namespace HotelApp.Services.RoomServices
                         _roomService.GetRoomType(room, isNew);
                         break;
                     case 2:
-                        _roomService.GetNumberOfPossibleBeds(room, isNew);
+                        _roomService.GetNumberOfPossibleExtraBeds(room, isNew);
                         break;
                     case 3:
                         _roomService.GetCostPerNight(room, isNew);

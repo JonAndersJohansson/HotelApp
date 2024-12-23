@@ -50,5 +50,17 @@ namespace HotelApp.Data
             }
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Konfigurera relationen mellan Booking och Invoice
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.InvoiceInBooking) // Navigering från Booking till Invoice
+                .WithOne(i => i.BookingInInvoice) // Navigering från Invoice till Booking
+                .HasForeignKey<Invoice>(i => i.BookingId) // Invoice har främmande nyckeln
+                .OnDelete(DeleteBehavior.Cascade); // Vid radering av Booking tas Invoice också bort
+
+            base.OnModelCreating(modelBuilder); // Anropa basklassen om det behövs
+        }
+
     }
 }

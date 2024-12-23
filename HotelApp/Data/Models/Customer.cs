@@ -25,5 +25,4 @@
             return $"KundNr: {Id}, {LastName} {FirstName}, {PhoneNumber}, {EmailAddress}, {Membership}-kund";
         }
     }
-
 }

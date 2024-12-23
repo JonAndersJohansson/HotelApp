@@ -51,13 +51,13 @@ namespace HotelApp.DI
             builder.RegisterType<CustomerService>()
                     .AsSelf()
                     .SingleInstance();
-            builder.RegisterType<InvoicePropertySelector>()
-                    .AsSelf()
-                    .SingleInstance();
             builder.RegisterType<InvoiceService>()
                     .AsSelf()
                     .SingleInstance();
             builder.RegisterType<BookingService>()
+                    .AsSelf()
+                    .SingleInstance();
+            builder.RegisterType<BookingPropertySelector>()
                     .AsSelf()
                     .SingleInstance();
 

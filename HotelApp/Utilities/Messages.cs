@@ -17,14 +17,20 @@
             int currentLineCursor = Console.CursorTop;
             Console.SetCursorPosition(14, currentLineCursor - 1);
         }
-        public static void SuccessfullInput()
+        public static void SuccessfullInputSave()
         {
             Console.ForegroundColor= ConsoleColor.Green;
+            Console.WriteLine("\n  Värde tillagt. Glöm inte spara...");
+            Console.ResetColor();
+            Thread.Sleep(1000);
+        }
+        public static void SuccessfullInput()
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\n  Värde tillagt.");
             Console.ResetColor();
             Thread.Sleep(1000);
         }
-
         public static void ClearAndShowHeader(string headerText)
         {
             Console.Clear();
@@ -33,7 +39,6 @@
             Console.WriteLine(Graphics.GetHeaderAsString(headerText));
             Console.ResetColor();
         }
-
         public static void AbortBooking()
         {
             Console.ForegroundColor = ConsoleColor.Red;

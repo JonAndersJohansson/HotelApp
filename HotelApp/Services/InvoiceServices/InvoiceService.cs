@@ -2,6 +2,7 @@
 using HotelApp.Data.Models;
 using HotelApp.UI;
 using HotelApp.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelApp.Services.InvoiceServices
 {
@@ -9,56 +10,23 @@ namespace HotelApp.Services.InvoiceServices
     {
         private readonly DisplayList _displayList;
         private ApplicationDbContext _dbContext;
-        public InvoiceService(DisplayList displayList, ApplicationDbContext dbContext)
+        public InvoiceService(DisplayList displayList, 
+            ApplicationDbContext dbContext)
         {
             _displayList = displayList;
             _dbContext = dbContext;
         }
-        public void GetAInvoiceFrom100IsPaid(bool isPaid)
-        {
-            List<Invoice> top100Invoices = _dbContext.Invoices
-                .Where(i => i.IsPaid == isPaid)
-                .OrderByDescending(i => i.InvoiceDate)
-                .Take(100)
-                .ToList();
-            var selectedIndex = _displayList.BrowseAList(top100Invoices, false, Graphics.GetHeaderAsString("Visar 100 senaste BETALDA fakturorna. Välj en för att visa all info ↑/↓/↩"), false);
-            if (selectedIndex >= 0 && selectedIndex < top100Invoices.Count)
-                ReadOneInvoice(top100Invoices[selectedIndex]);
-            else if (selectedIndex < -1 || selectedIndex > top100Invoices.Count)
-            {
-                Console.WriteLine("  Fel: Index kunde inte hittas i GetAInvoiceFrom100IsPaid.\n  Tryck valfri tangent för att fortsätta...");
-                Console.ReadKey();
-            }
-        }
-        public void GetAInvoiceFrom100IsOverDue()
-        {
-            List<Invoice> top100Invoices = _dbContext.Invoices
-                .Where(i => i.IsOverDue == true)
-                .OrderByDescending(i => i.InvoiceDate)
-                .Take(100)
-                .ToList();
-            var selectedIndex = _displayList.BrowseAList(top100Invoices, false, Graphics.GetHeaderAsString("Visar 100 senaste förfallna fakturorna. Välj en för att visa all info ↑/↓/↩"), false);
-            if (selectedIndex >= 0 && selectedIndex < top100Invoices.Count)
-                ReadOneInvoice(top100Invoices[selectedIndex]);
-            else if (selectedIndex == -1)
-                return;
-            else
-            {
-                Console.WriteLine("  Fel: Ogiltigt val i GetAInvoiceFrom100IsOverDue.\n  Tryck valfri tangent för att fortsätta");
-                Console.ReadKey();
-            }
-        }
-
         public void SearchInvoiceToList(bool isToCancel, bool isToRegistratePay)
         {
             string messageToUseInHeader = "Sök Faktura";
             if (isToCancel) messageToUseInHeader = "Sök faktura att ANNULERA";
-            if (isToRegistratePay) messageToUseInHeader = "Sök faktura för att registrera den som betald";
+            if (isToRegistratePay) messageToUseInHeader = "Sök faktura för " +
+                    "att registrera den som betald";
 
             Messages.ClearAndShowHeader(messageToUseInHeader);
             Messages.RequiredInputMessage();
-            Console.WriteLine("   1. Sökbar fakturainfo: FakturaNr, Fakturadatum (yyyy-MM-dd)");
-            Console.WriteLine("\n  Sök:");
+            Console.WriteLine("   1. Sökbar fakturainfo: FakturaNr, " +
+                "Fakturadatum (yyyy-MM-dd)\n  Sök:");
             int currentLineCursor = Console.CursorTop;
             Console.SetCursorPosition(7, currentLineCursor - 1);
 
@@ -66,7 +34,8 @@ namespace HotelApp.Services.InvoiceServices
 
             if (string.IsNullOrWhiteSpace(userInput))
             {
-                Console.WriteLine("  Du har inte angivit något.\n  Tryck på valfri tangent för att återgå...");
+                Console.WriteLine("  Du har inte angivit något.\n  Tryck på " +
+                    "valfri tangent för att återgå...");
                 Console.ReadKey();
                 return;
             }
@@ -77,71 +46,105 @@ namespace HotelApp.Services.InvoiceServices
             if (userInput.Length < 10)
             {
                 matchingInvoices = _dbContext.Invoices
-                    .Where(i => i.Id.ToString().Contains(userInput))
+                    .Where(i => i.Id
+                    .ToString()
+                    .Contains(userInput))
                     .ToList();
             }
             else
             {
                 matchingInvoices = _dbContext.Invoices
-                    .Where(i => i.InvoiceDate.ToString("yyyy-MM-dd").Contains(userInput))
+                    .Where(i => i.InvoiceDate
+                    .ToString("yyyy-MM-dd")
+                    .Contains(userInput))
                     .ToList();
             }
             if (!matchingInvoices.Any())
             {
-                Console.WriteLine("  Inga fakturor hittades som matchar din sökning.\n  Tryck på valfri tangent för att återgå...");
+                Console.WriteLine("  Inga fakturor hittades som matchar din " +
+                    "sökning.\n  Tryck på valfri tangent för att återgå...");
                 Console.ReadKey();
                 return;
             }
             SelectInvoiceInList(matchingInvoices, isToCancel, isToRegistratePay);
         }
 
-        public void SelectInvoiceInList(List<Invoice> matchingInvoices, bool isToCancel, bool isToRegistratePay)
+        public void SelectInvoiceInList(List<Invoice> matchingInvoices, 
+            bool isToCancel, bool isToRegistratePay)
         {
-            string messageToUseInHeader = "Sökresultat, välj faktura för att visa info ↑/↓/↩";
-            if (isToCancel) messageToUseInHeader = "Sökresultat, välj faktura för att annulera ↑/↓/↩";
-            if (isToRegistratePay) messageToUseInHeader = "Sökresultat, välj faktura för att registrera den som betald ↑/↓/↩";
+            string messageToUseInHeader = "Sökresultat, välj faktura för " +
+                "att visa info ↑/↓/↩";
+            if (isToCancel) messageToUseInHeader = "Sökresultat, välj " +
+                    "faktura för att annulera ↑/↓/↩";
+            if (isToRegistratePay) messageToUseInHeader = "Sökresultat, " +
+                    "välj faktura för att registrera den som betald ↑/↓/↩";
 
-            var selectedIndex = _displayList.BrowseAList(matchingInvoices, false, Graphics.GetHeaderAsString(messageToUseInHeader), false);
+            var selectedIndex = _displayList.BrowseAList(matchingInvoices, 
+                false, Graphics.GetHeaderAsString(messageToUseInHeader), false);
 
-            if (selectedIndex >= 0 && selectedIndex < matchingInvoices.Count && !isToCancel && !isToRegistratePay)
+            if (selectedIndex >= 0 && selectedIndex < matchingInvoices.Count 
+                && !isToCancel && !isToRegistratePay)
                 ReadOneInvoice(matchingInvoices[selectedIndex]);
-            else if (selectedIndex >= 0 && selectedIndex < matchingInvoices.Count && isToCancel && !isToRegistratePay)
+            else if (selectedIndex >= 0 && selectedIndex < 
+                matchingInvoices.Count && isToCancel && !isToRegistratePay)
                 CancelInvoice(matchingInvoices[selectedIndex]);
-            else if (selectedIndex >= 0 && selectedIndex < matchingInvoices.Count && !isToCancel && isToRegistratePay)
+            else if (selectedIndex >= 0 && selectedIndex < 
+                matchingInvoices.Count && !isToCancel && isToRegistratePay)
                 RegistratePaymentOnInvoice(matchingInvoices[selectedIndex]);
             else if (selectedIndex == -1)
                 return;
             else
             {
-                Console.WriteLine("  Fel: inget index kunde hittas i SelectInvoiceInList.\n  Tryckvalfri tangent för att återgå...");
+                Console.WriteLine("  Fel: inget index kunde hittas i " +
+                    "SelectInvoiceInList.\n  Tryckvalfri tangent för att " +
+                    "återgå...");
                 Console.ReadKey();
             }
         }
 
         public void ReadOneInvoice(Invoice selectedInvoice)
         {
-            Messages.ClearAndShowHeader($"  Info fakturanummer: {selectedInvoice.Id}");
+            _dbContext.Entry(selectedInvoice)
+                .Reference(i => i.BookingInInvoice)
+                .Query()
+                .Include(b => b.CustomerInBooking)
+                .Load();
+
+            Messages.ClearAndShowHeader($"  Info fakturanummer: " +
+                $"{selectedInvoice.Id}");
 
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine($"  FakturaNr: {selectedInvoice.Id}");
-            Console.WriteLine($"  Fakturadatum: {selectedInvoice.InvoiceDate}");
+            Console.WriteLine($"  Fakturadatum: {selectedInvoice.
+                InvoiceDate}");
             Console.WriteLine($"  Belopp: {selectedInvoice.TotalAmount}");
-            Console.WriteLine($"  Förfallen: {(selectedInvoice.IsOverDue ? "Ja" : "Nej")}");
-            Console.WriteLine($"  Betald: {(selectedInvoice.IsPaid ? "Ja" : "Nej")}");
-            Console.WriteLine($"  Annulerad: {(selectedInvoice.IsCancelled ? "Ja" : "Nej")}");
+            Console.WriteLine($"  Förfallen: {(selectedInvoice.IsOverDue
+                ? "Ja" : "Nej")}");
+            Console.WriteLine($"  Betald: {(selectedInvoice.IsPaid ?
+                "Ja" : "Nej")}");
+            Console.WriteLine($"  Annulerad: {(selectedInvoice.IsCancelled
+                ? "Ja" : "Nej")}");
             Console.ResetColor();
 
             if (selectedInvoice.BookingInInvoice != null)
             {
                 Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine($"\n  --- Bokning kopplad till FakNr:{selectedInvoice.Id} ---");
+                Console.WriteLine($"\n  --- Bokning kopplad till FakNr:" +
+                    $"{selectedInvoice.Id} ---");
 
-                Console.WriteLine($"      Bokningnummer: {selectedInvoice.BookingInInvoice.Id}");
-                Console.WriteLine($"      Antal besökare: {selectedInvoice.BookingInInvoice.NumberOfGuests}");
-                Console.WriteLine($"      Incheckning: {selectedInvoice.BookingInInvoice.StartDate}");
-                Console.WriteLine($"      Utcheckning: {selectedInvoice.BookingInInvoice.EndDate}");
-                Console.WriteLine($"      KundNamn: {selectedInvoice.BookingInInvoice.CustomerInBooking.FirstName} {selectedInvoice.BookingInInvoice.CustomerInBooking.LastName}");
-                Console.WriteLine($"      KundNr: {selectedInvoice.BookingInInvoice.CustomerInBooking.Id}");
+                Console.WriteLine($"      Bokningnummer: {selectedInvoice.
+                    BookingInInvoice.Id}");
+                Console.WriteLine($"      Antal besökare: {selectedInvoice.
+                    BookingInInvoice.NumberOfGuests}");
+                Console.WriteLine($"      Incheckning: {selectedInvoice.
+                    BookingInInvoice.StartDate}");
+                Console.WriteLine($"      Utcheckning: {selectedInvoice.
+                    BookingInInvoice.EndDate}");
+                Console.WriteLine($"      KundNamn: {selectedInvoice.
+                    BookingInInvoice.CustomerInBooking.FirstName} {selectedInvoice.
+                    BookingInInvoice.CustomerInBooking.LastName}");
+                Console.WriteLine($"      KundNr: {selectedInvoice.
+                    BookingInInvoice.CustomerInBooking.Id}");
             }
             else
                 Console.WriteLine("\n  Inga relaterade bokningar.");
@@ -150,13 +153,63 @@ namespace HotelApp.Services.InvoiceServices
             Console.WriteLine("\n  Tryck på någon tangent för att återgå...");
             Console.ReadKey();
         }
+        public void GetAInvoiceFrom100IsPaid(bool isPaid)
+        {
+            var top100Invoices = _dbContext.Invoices
+                .Where(i => i.IsPaid == isPaid)
+                .OrderByDescending(i => i.InvoiceDate)
+                .Take(100)
+                .ToList();
+            var selectedIndex = _displayList.BrowseAList(top100Invoices, 
+                false, Graphics.GetHeaderAsString("Visar 100 senaste BETALDA" +
+                " fakturorna. Välj en för att visa all info ↑/↓/↩"), false);
+            if (selectedIndex >= 0 && selectedIndex < top100Invoices.Count)
+                ReadOneInvoice(top100Invoices[selectedIndex]);
+            else if (selectedIndex < -1 || selectedIndex > top100Invoices.Count)
+            {
+                Console.WriteLine("  Fel: Index kunde inte hittas i " +
+                    "GetAInvoiceFrom100IsPaid.\n  Tryck valfri tangent för " +
+                    "att fortsätta...");
+                Console.ReadKey();
+            }
+        }
+        public void GetAInvoiceFrom100IsOverDue()
+        {
+            var top100Invoices = _dbContext.Invoices
+                .Where(i => i.IsOverDue == true)
+                .OrderByDescending(i => i.InvoiceDate)
+                .Take(100)
+                .ToList();
+            var selectedIndex = _displayList.BrowseAList(top100Invoices, 
+                false, Graphics.GetHeaderAsString("Visar 100 senaste " +
+                "förfallna fakturorna. Välj en för att visa all info ↑/↓/↩"), 
+                false);
+            if (selectedIndex >= 0 && selectedIndex < top100Invoices.Count)
+                ReadOneInvoice(top100Invoices[selectedIndex]);
+            else if (selectedIndex == -1)
+                return;
+            else
+            {
+                Console.WriteLine("  Fel: Ogiltigt val i " +
+                    "GetAInvoiceFrom100IsOverDue.\n  Tryck valfri tangent " +
+                    "för att fortsätta");
+                Console.ReadKey();
+            }
+        }
         public void RegistratePaymentOnInvoice(Invoice selectedInvoice)
         {
             Messages.ClearAndShowHeader("Registrera betalning på faktura");
 
-            if (selectedInvoice.IsPaid == false)
+            var entry = _dbContext.Entry(selectedInvoice);
+            if (entry.State == EntityState.Detached)
+                _dbContext.Attach(selectedInvoice);
+
+            if (!selectedInvoice.IsPaid)
             {
                 selectedInvoice.IsPaid = true;
+
+                _dbContext.SaveChanges();
+
                 Console.Write("\n  Följande faktura är registrerad som betald: ");
                 Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine(selectedInvoice.Id);
@@ -168,14 +221,22 @@ namespace HotelApp.Services.InvoiceServices
             Console.WriteLine("\n  Tryck på någon tangent för att återgå...");
             Console.ReadKey();
         }
+
         public void CancelInvoice(Invoice selectedInvoice)
         {
             Messages.ClearAndShowHeader("Annullera Faktura");
 
-            if (selectedInvoice.IsCancelled == false)
+            var entry = _dbContext.Entry(selectedInvoice);
+            if (entry.State == EntityState.Detached)
+                _dbContext.Attach(selectedInvoice);
+
+            if (!selectedInvoice.IsCancelled)
             {
                 selectedInvoice.IsCancelled = true;
-                Console.Write("\n  Följande faktura är annulerad: ");
+
+                _dbContext.SaveChanges();
+
+                Console.Write("\n  Följande faktura är annullerad: ");
                 Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine(selectedInvoice.Id);
                 Console.ResetColor();
@@ -186,6 +247,7 @@ namespace HotelApp.Services.InvoiceServices
             Console.WriteLine("\n  Tryck på någon tangent för att återgå...");
             Console.ReadKey();
         }
+
         public Invoice GetTotalAmount(Invoice invoice)
         {
             decimal totalAmount;
@@ -193,11 +255,12 @@ namespace HotelApp.Services.InvoiceServices
             {
                 Messages.ClearAndShowHeader("Fakturabelopp ny faktura");
                 Messages.RequiredInputMessage();
-                Console.WriteLine("   1. Beloppet måste vara en siffra mellan 0 och 10000000");
+                Console.WriteLine("   1. Beloppet måste vara en siffra " +
+                    "mellan 0 och 10000000");
                 Messages.SetValueWithCursor();
 
                 string? totalAmountInput = Console.ReadLine();
-                if (totalAmountInput.ToLower() == "exit")
+                if (totalAmountInput?.ToLower() == "exit")
                     return invoice;
 
                 if (decimal.TryParse(totalAmountInput, out totalAmount))
@@ -205,36 +268,39 @@ namespace HotelApp.Services.InvoiceServices
                     if (totalAmount >= 0 && totalAmount <= 10000000)
                     {
                         invoice.TotalAmount = totalAmount;
-                        Messages.SuccessfullInput();
+                        Messages.SuccessfullInputSave();
                         return invoice;
                     }
                     else
-                        Console.WriteLine("\n  Värdet måste vara mellan 0 och 10000000. Försök igen.");
+                        Console.WriteLine("\n  Värdet måste vara mellan 0 " +
+                            "och 10000000. Försök igen.");
                 }
                 else
-                    Console.WriteLine("\n  Ogiltig inmatning. Ange ett giltigt värde.");
+                    Console.WriteLine("\n  Ogiltig inmatning. Ange ett " +
+                        "giltigt värde.");
             }
         }
-
         public Invoice GetIsPaid(Invoice invoice)
         {
             List<string> listOfChoices = new List<string>
             {
             "Betald", "Ej betald"
             };
-            var selectedIndex = _displayList.BrowseAList(listOfChoices, false, Graphics.GetHeaderAsString($"Ange Betald / Obetald. Standardvärde: {(invoice.IsPaid ? "JA" : "NEJ")}"), false);
+            var selectedIndex = _displayList.BrowseAList(listOfChoices, 
+                false, Graphics.GetHeaderAsString($"Ange Betald / Obetald. " +
+                $"Standardvärde: {(invoice.IsPaid ? "JA" : "NEJ")}"), false);
             if (selectedIndex == -1)
                 return invoice;
             else if (selectedIndex == 0)
             {
                 invoice.IsPaid = true;
-                Messages.SuccessfullInput();
+                Messages.SuccessfullInputSave();
                 return invoice;
             }
             else if (selectedIndex == 1)
             {
                 invoice.IsPaid = false;
-                Messages.SuccessfullInput();
+                Messages.SuccessfullInputSave();
                 return invoice;
             }
             else
@@ -247,129 +313,111 @@ namespace HotelApp.Services.InvoiceServices
             {
             "Förfallen", "Pågående"
             };
-            var selectedIndex = _displayList.BrowseAList(listOfChoices, false, Graphics.GetHeaderAsString($"Ange Pågående / Förfallen. Standardvärde: {(invoice.IsOverDue ? "JA" : "NEJ")}"), false);
+            var selectedIndex = _displayList.BrowseAList(listOfChoices, 
+                false, Graphics.GetHeaderAsString($"Ange Pågående / " +
+                $"Förfallen. Standardvärde: {(invoice.IsOverDue 
+                ? "JA" : "NEJ")}"), false);
             if (selectedIndex == -1)
                 return invoice;
             else if (selectedIndex == 0)
             {
                 invoice.IsOverDue = true;
-                Messages.SuccessfullInput();
+                Messages.SuccessfullInputSave();
                 return invoice;
             }
             else if (selectedIndex == 1)
             {
                 invoice.IsOverDue = false;
-                Messages.SuccessfullInput();
+                Messages.SuccessfullInputSave();
                 return invoice;
             }
             else
                 return invoice;
         }
-
-        public bool ValidateInvoice(Invoice invoice)
-        {
-            if (invoice.TotalAmount == 0 || invoice.BookingId == 0)
-                return false;
-            return true;
-        }
-
-        public void AddInvoice(Invoice invoice)
-        {
-            invoice.InvoiceDate = DateTime.Now;
-
-            if (invoice.DueDate == DateTime.MinValue)
-                invoice.DueDate = DateTime.Now.AddDays(+30);
-
-            _dbContext.Invoices.Add(invoice);
-
-            Console.Write("\n  Faktura ");
-            Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.Write(invoice.Id);
-            Console.ResetColor();
-            Console.WriteLine(" har sparats.");
-            Thread.Sleep(1000);
-            ReadOneInvoice(invoice);
-        }
-
         public Invoice GetBookingNr(Invoice invoice)
         {
-            int bookingId;
             while (true)
             {
                 Messages.ClearAndShowHeader("Koppla faktura mot boknigsnummer");
                 Messages.RequiredInputMessage();
-                Console.WriteLine("   1. Bokningnummer är possitiva. \n\n  Skriv in bokningsnummret du vill koppla till fakturan.");
+                Console.WriteLine("   1. Bokningnummer är possitiva. \n\n" +
+                    "  Skriv in bokningsnummret du vill koppla till fakturan.");
                 Messages.SetValueWithCursor();
 
                 string? bookingNumberInput = Console.ReadLine();
-                if (bookingNumberInput.ToLower() == "exit")
+                if (bookingNumberInput?.ToLower() == "exit")
                     return invoice;
 
-                if (int.TryParse(bookingNumberInput, out bookingId))
+                if (int.TryParse(bookingNumberInput, out int bookingId))
                 {
                     if (bookingId >= 0)
                     {
-                        var booking = _dbContext.Bookings.FirstOrDefault(b => b.Id == bookingId);            //DB
+                        var booking = _dbContext.Bookings
+                            .FirstOrDefault(b => b.Id == bookingId);
 
                         if (booking != null)
                         {
                             invoice.BookingId = bookingId;
-                            Messages.SuccessfullInput();
+                            Messages.SuccessfullInputSave();
                             return invoice;
                         }
                         else
-                            Console.WriteLine("\n  Det finns ingen bokning som matchar det numret.");
+                            Console.WriteLine("\n  Det finns ingen bokning " +
+                                "som matchar det numret.");
                     }
                     else
                         Console.WriteLine("\n  Värdet måste vara positivt.");
                 }
                 else
-                    Console.WriteLine("\n  Ogiltig inmatning. Ange ett giltigt värde.");
+                    Console.WriteLine("\n  Ogiltig inmatning. Ange ett " +
+                        "giltigt värde.");
             }
         }
-
         public Invoice GetDueDate(Invoice invoice)
         {
             List<string> listOfDueDate = new List<string>
             {
             "10-dagar", "20-dagar", "30-dagar"
             };
-            var selectedIndex = _displayList.BrowseAList(listOfDueDate, false, Graphics.GetHeaderAsString($"Välj betalningsvillkor. Standardvärde: 30-dagar"), false);
+            var selectedIndex = _displayList.BrowseAList(listOfDueDate, 
+                false, Graphics.GetHeaderAsString($"Välj betalningsvillkor. " +
+                $"Standardvärde: 30-dagar"), false);
             if (selectedIndex == -1)
                 return invoice;
             else if (selectedIndex == 0)
             {
                 invoice.DueDate = DateTime.Now.AddDays(+10);
-                Messages.SuccessfullInput();
+                Messages.SuccessfullInputSave();
                 return invoice;
             }
             else if (selectedIndex == 1)
             {
                 invoice.DueDate = DateTime.Now.AddDays(+20);
-                Messages.SuccessfullInput();
+                Messages.SuccessfullInputSave();
                 return invoice;
             }
             else if (selectedIndex == 2)
             {
                 invoice.DueDate = DateTime.Now.AddDays(+30);
-                Messages.SuccessfullInput();
+                Messages.SuccessfullInputSave();
                 return invoice;
             }
             else
                 return invoice;
         }
-
         public void GenerateInvoiceOfBooking(Booking newBooking)
         {
             if (newBooking == null)
-                throw new ArgumentNullException(nameof(newBooking), "  Bokningen kan inte vara null.");
+                throw new ArgumentNullException(nameof(newBooking), "  " +
+                    "Bokningen kan inte vara null.");
 
-            if (newBooking.ListOfBookingRoomsInBooking == null || !newBooking.ListOfBookingRoomsInBooking.Any())
+            if (newBooking.ListOfBookingRoomsInBooking == null || !newBooking.
+                ListOfBookingRoomsInBooking.Any())
                 throw new ArgumentException("  Bokningen har inga kopplade rum.");
 
             DateTime invoiceDate = DateTime.Now.Date;
 
-            int dueDays = newBooking.CustomerInBooking.Membership switch
+            var dueDays = newBooking.CustomerInBooking.Membership switch
             {
                 TypeOfMembership.Brons => 10,
                 TypeOfMembership.Silver => 20,
@@ -410,11 +458,57 @@ namespace HotelApp.Services.InvoiceServices
             decimal totalWithDiscount = roomCost * (1 - discountPercentage);
             return Math.Round(totalWithDiscount, 2);
         }
-
-
         public void SaveInvoiceToDataBase(Invoice newInvoice)
         {
             _dbContext.Invoices.Add(newInvoice);
+            _dbContext.SaveChanges();
+        }
+
+        public bool ValidateInvoice(Invoice invoice)
+        {
+            if (invoice.TotalAmount == 0 || invoice.BookingId == 0)
+                return false;
+            return true;
+        }
+        public void AddInvoice(Invoice invoice)
+        {
+            invoice.InvoiceDate = DateTime.Now;
+
+            if (invoice.DueDate == DateTime.MinValue)
+                invoice.DueDate = DateTime.Now.AddDays(30);
+
+            var entry = _dbContext.Entry(invoice);
+            if (entry.State == EntityState.Detached)
+                _dbContext.Invoices.Add(invoice);
+
+            _dbContext.SaveChanges();
+
+            Console.Write("\n  Faktura ");
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.Write(invoice.Id);
+            Console.ResetColor();
+            Console.WriteLine(" har sparats.");
+            Thread.Sleep(1000);
+
+            ReadOneInvoice(invoice);
+        }
+        public void CheckOverDue()
+        {
+            var overdueInvoices = _dbContext.Invoices
+                .Include(i => i.BookingInInvoice)
+                .Where(i => i.DueDate < DateTime.Now && !i.IsOverDue)
+                .ToList();
+
+            foreach (var invoice in overdueInvoices)
+            {
+                invoice.IsOverDue = true;
+
+                if (invoice.BookingInInvoice != null)
+                {
+                    invoice.BookingInInvoice.IsCancelled = true;
+                }
+            }
+            _dbContext.SaveChanges();
         }
     }
 }
