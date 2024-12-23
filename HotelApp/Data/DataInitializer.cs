@@ -28,9 +28,9 @@ namespace HotelApp.Data
                 return;
             var customer1 = new Customer
             {
-                FirstName = "Anna",
+                FirstName = "Fia",
                 LastName = "Svensson",
-                EmailAddress = "anna.svensson@example.com",
+                EmailAddress = "fia.svensson@example.com",
                 PhoneNumber = "0701234567",
                 DateOfBirth = new DateOnly(1985, 4, 12),
                 Address = "Storgatan 10, 111 22 Stockholm",
@@ -42,9 +42,9 @@ namespace HotelApp.Data
 
             var customer2 = new Customer
             {
-                FirstName = "Erik",
+                FirstName = "Pelle",
                 LastName = "Johansson",
-                EmailAddress = "erik.johansson@example.com",
+                EmailAddress = "Pelle.johansson@example.com",
                 PhoneNumber = "0707654321",
                 DateOfBirth = new DateOnly(1990, 8, 23),
                 Address = "Långgatan 20, 111 33 Stockholm",
@@ -69,9 +69,9 @@ namespace HotelApp.Data
 
             var customer4 = new Customer
             {
-                FirstName = "Johan",
+                FirstName = "Kalle",
                 LastName = "Nilsson",
-                EmailAddress = "johan.nilsson@example.com",
+                EmailAddress = "kalle.nilsson@example.com",
                 PhoneNumber = "0709876543",
                 DateOfBirth = new DateOnly(1988, 2, 19),
                 Address = "Torggatan 3, 222 33 Göteborg",
@@ -80,7 +80,6 @@ namespace HotelApp.Data
                 IsActive = true,
             };
 
-            // Lägg till kunder i databasen
             _dbContext.Customers.AddRange(customer1, customer2, customer3, customer4);
             _dbContext.SaveChanges();
         }
