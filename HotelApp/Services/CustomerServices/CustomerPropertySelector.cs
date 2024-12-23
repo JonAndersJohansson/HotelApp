@@ -59,10 +59,10 @@ namespace HotelApp.Services.CustomerServices
                         {
                             if (isNewFromBooking)
                             {
-                                _customerService.SaveCustomerToDataBase(customer);
+                                _customerService.SaveCustomerToDataBase(customer, isNew);
                                 return customer;
                             }
-                            _customerService.SaveCustomerToDataBase(customer);
+                            _customerService.SaveCustomerToDataBase(customer, isNew);
                             _customerController.Value.MenuSwitch();
                             break;
                         }

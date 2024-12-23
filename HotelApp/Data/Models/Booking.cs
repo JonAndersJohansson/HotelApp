@@ -10,8 +10,6 @@
         public string? OtherInfoInBooking { get; set; }
         public required Customer CustomerInBooking { get; set; }
         public required int CustomerId { get; set; }
-        public Invoice? InvoiceInBooking { get; set; }
-        public int InvoiceId { get; set; }
 
         public List<BookingRoom> ListOfBookingRoomsInBooking { get; set; } = new List<BookingRoom>();
 

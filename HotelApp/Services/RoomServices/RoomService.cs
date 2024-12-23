@@ -258,9 +258,17 @@ namespace HotelApp.Services
         }
         public Room GetNumberOfPossibleExtraBeds(Room room, bool isNew)
         {
-            List<byte> listOfNumbers = new List<byte>
+            if (room.RoomType == BedSize.Single)
             {
-            0, 1, 2, 3, 4, 5, 6, 7, 8
+                Messages.ClearAndShowHeader("Fel: Enkelrum kan inte ha extrasängar.");
+                Console.WriteLine("\n  Ett enkelrum kan inte ha extrasängar.");
+                Console.WriteLine("  Tryck på valfri tangent för att återgå...");
+                Console.ReadKey();
+                return room;
+            }
+            List<string> listOfNumbers = new List<string>
+            {
+                "1st (Rummet är mindre än 25m²)", "2st (Rummet är större än 25m²)", 
             };
             string messageToUseInHeader = $"Välj antal möjliga extrasängar " +
                 $"↑/↓/↩ - Nuvarande värde: {room.NumberOfPossibleExtraBeds}";
@@ -273,12 +281,18 @@ namespace HotelApp.Services
                 (messageToUseInHeader), false);
             if (numberOfPossibleBedsInput == -1)
                 return room;
-            else if (numberOfPossibleBedsInput > -1 && numberOfPossibleBedsInput < 9)
+            else if (numberOfPossibleBedsInput > -1 && numberOfPossibleBedsInput == 0)
             {
-                room.NumberOfPossibleExtraBeds = (byte)numberOfPossibleBedsInput;
+                room.NumberOfPossibleExtraBeds = 1;
                 Messages.SuccessfullInputSave();
                 return room;
-            } 
+            }
+            else if (numberOfPossibleBedsInput > -1 && numberOfPossibleBedsInput == 1)
+            {
+                room.NumberOfPossibleExtraBeds = 2;
+                Messages.SuccessfullInputSave();
+                return room;
+            }
             else
                 return room;
         }
@@ -436,6 +450,13 @@ namespace HotelApp.Services
                 && isNew == true)
             {
                 Console.WriteLine("\n  Ett rum med detta nummer finns redan." +
+                    "\n  Tryck på valfri tangent för att försöka igen...");
+                Console.ReadKey();
+                return false;
+            }
+            if (room.RoomType == BedSize.Single && room.NumberOfPossibleExtraBeds > 0)
+            {
+                Console.WriteLine("\n  Ett enkelrum kan inte ha extrasängar." +
                     "\n  Tryck på valfri tangent för att försöka igen...");
                 Console.ReadKey();
                 return false;

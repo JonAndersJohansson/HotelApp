@@ -20,7 +20,7 @@ namespace HotelApp.Services.RoomServices
         {
             List<string> menuListInRoomProperty = new List<string>
             {
-                "Rumsnummer *", "Typ av rum *", "Antal möjliga extrasängar", "Baskostnad per natt *", "Handikappanpassad", "Övrigt / Beskrivning", "Aktiv / Icke aktiv", "Kontrollera & Spara"
+                "Rumsnummer *", "Typ av rum (Enkel / Dubbel) *", "Antal möjliga extrasängar (Endast dubbelrum)", "Baskostnad per natt *", "Handikappanpassad", "Övrigt / Beskrivning", "Aktiv / Icke aktiv", "Kontrollera & Spara"
             };
 
             while (true)

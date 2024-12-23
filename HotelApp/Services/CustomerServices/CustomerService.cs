@@ -1,6 +1,5 @@
 ﻿using HotelApp.Data;
 using HotelApp.Data.Models;
-using HotelApp.Services.BookingService;
 using HotelApp.UI;
 using HotelApp.Utilities;
 using Microsoft.EntityFrameworkCore;
@@ -84,7 +83,7 @@ namespace HotelApp.Services.CustomerServices
                     matchingCustomers[selectedIndex], false, false);
             else if (selectedIndex >= 0 && selectedIndex < matchingCustomers.Count 
                 && !isDeactivate && !isToChange)
-                ReadOneCustomer(matchingCustomers[selectedIndex]);
+                ReadOneCustomer(matchingCustomers[selectedIndex], false);
             else if (selectedIndex == -1)
                 return;
             else
@@ -94,7 +93,7 @@ namespace HotelApp.Services.CustomerServices
                 Console.ReadKey();
             }
         }
-        public void ReadOneCustomer(Customer selectedCustomer)
+        public void ReadOneCustomer(Customer selectedCustomer, bool isNew)
         {
             _dbContext.Entry(selectedCustomer)
                 .Collection(c => c.ListOfBookingsInCustomer)
@@ -115,56 +114,60 @@ namespace HotelApp.Services.CustomerServices
             Console.WriteLine($"  Övrig info: {selectedCustomer.OtherInfoInCustomer}");
             Console.ResetColor();
 
-            if (selectedCustomer.ListOfBookingsInCustomer?.Count > 0)
+            if (!isNew)
             {
-                var today = DateTime.Now;
-
-                var sortedBookings = selectedCustomer.ListOfBookingsInCustomer
-                    .OrderBy(b => b.StartDate)
-                    .ToList();
-
-                var beforeToday = sortedBookings
-                    .Where(b => b.StartDate < today)
-                    .TakeLast(3)
-                    .ToList();
-                var afterToday = sortedBookings
-                    .Where(b => b.StartDate >= today)
-                    .Take(3)
-                    .ToList();
-
-                Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine("\n  --- Kommande bokningar (3 närmsta) ---");
-                foreach (var booking in afterToday)
+                if (selectedCustomer.ListOfBookingsInCustomer?.Count > 0)
                 {
-                    Console.WriteLine($"      Bokningnummer: {booking.Id}");
-                    Console.WriteLine($"      Antal besökare: " +
-                        $"{booking.NumberOfGuests}");
-                    Console.WriteLine($"      Incheckning: " +
-                        $"{booking.StartDate}");
-                    Console.WriteLine($"      Utcheckning: " +
-                        $"{booking.EndDate}");
-                    Console.WriteLine($"      Övrig info: " +
-                        $"{booking.OtherInfoInBooking}");
-                    Console.WriteLine("      -");
+                    var today = DateTime.Now;
+
+                    var sortedBookings = selectedCustomer.ListOfBookingsInCustomer
+                        .OrderBy(b => b.StartDate)
+                        .ToList();
+
+                    var beforeToday = sortedBookings
+                        .Where(b => b.StartDate < today)
+                        .TakeLast(3)
+                        .ToList();
+                    var afterToday = sortedBookings
+                        .Where(b => b.StartDate >= today)
+                        .Take(3)
+                        .ToList();
+
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine("\n  --- Kommande bokningar (3 närmsta) ---");
+                    foreach (var booking in afterToday)
+                    {
+                        Console.WriteLine($"      Bokningnummer: {booking.Id}");
+                        Console.WriteLine($"      Antal besökare: " +
+                            $"{booking.NumberOfGuests}");
+                        Console.WriteLine($"      Incheckning: " +
+                            $"{booking.StartDate}");
+                        Console.WriteLine($"      Utcheckning: " +
+                            $"{booking.EndDate}");
+                        Console.WriteLine($"      Övrig info: " +
+                            $"{booking.OtherInfoInBooking}");
+                        Console.WriteLine("      -");
+                    }
+                    Console.WriteLine("\n     --- Tidigare bokningar (3 senaste) ---");
+                    foreach (var booking in beforeToday)
+                    {
+                        Console.WriteLine($"         Bokningnummer: {booking.Id}");
+                        Console.WriteLine($"         Antal besökare: " +
+                            $"{booking.NumberOfGuests}");
+                        Console.WriteLine($"         Incheckning: " +
+                            $"{booking.StartDate}");
+                        Console.WriteLine($"         Utcheckning: " +
+                            $"{booking.EndDate}");
+                        Console.WriteLine($"         Övrig info: " +
+                            $"{booking.OtherInfoInBooking}");
+                        Console.WriteLine("         -");
+                    }
+                    Console.ResetColor();
                 }
-                Console.WriteLine("\n     --- Tidigare bokningar (3 senaste) ---");
-                foreach (var booking in beforeToday)
-                {
-                    Console.WriteLine($"         Bokningnummer: {booking.Id}");
-                    Console.WriteLine($"         Antal besökare: " +
-                        $"{booking.NumberOfGuests}");
-                    Console.WriteLine($"         Incheckning: " +
-                        $"{booking.StartDate}");
-                    Console.WriteLine($"         Utcheckning: " +
-                        $"{booking.EndDate}");
-                    Console.WriteLine($"         Övrig info: " +
-                        $"{booking.OtherInfoInBooking}");
-                    Console.WriteLine("         -");
-                }
-                Console.ResetColor();
+                else
+                    Console.WriteLine("\n  Inga relaterade bokningar.");
             }
-            else
-                Console.WriteLine("\n  Inga relaterade bokningar.");
+            
             
             Console.WriteLine("\n  Tryck på någon tangent för att återgå...");
             Console.ReadKey();
@@ -293,7 +296,6 @@ namespace HotelApp.Services.CustomerServices
                 if (phoneNumberInput?.ToLower() == "exit")
                     return customer;
 
-                // Kontrollera om telefonnumret är giltigt
                 if (IsValidPhoneNumber(phoneNumberInput))
                 {
                     customer.PhoneNumber = phoneNumberInput;
@@ -501,7 +503,7 @@ namespace HotelApp.Services.CustomerServices
 
             return true;
         }
-        public void SaveCustomerToDataBase(Customer customer)
+        public void SaveCustomerToDataBase(Customer customer, bool isNew)
         {
             var entry = _dbContext.Entry(customer);
             if (entry.State == EntityState.Detached)
@@ -516,7 +518,7 @@ namespace HotelApp.Services.CustomerServices
             Console.WriteLine(" har sparats.");
             Thread.Sleep(1000);
 
-            ReadOneCustomer(customer);
+            ReadOneCustomer(customer, isNew);
         }
         public void DeactivateACustomer(Customer customer)
         {

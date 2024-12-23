@@ -19,7 +19,6 @@ namespace HotelApp.Data
             SeedBookings();
             SeedBookingRooms();
             SeedInvoices();
-            //LinkRelationships();
             _dbContext.SaveChanges();
         }
 
@@ -118,7 +117,7 @@ namespace HotelApp.Data
             {
                 RoomNumber = 103,
                 RoomType = BedSize.Double,
-                NumberOfPossibleExtraBeds = 3,
+                NumberOfPossibleExtraBeds = 2,
                 CostPerNight = 1200m,
                 IsDisabilityFriendly = true,
                 OtherOrDescription = "Havsutsikt",
@@ -166,7 +165,7 @@ namespace HotelApp.Data
                 CustomerInBooking = customer2,
                 StartDate = DateTime.Now.AddDays(-1), 
                 EndDate = DateTime.Now.AddDays(6),
-                NumberOfGuests = 3, // Valid for room2
+                NumberOfGuests = 3,
                 IsCancelled = false,
                 ListOfBookingRoomsInBooking = new List<BookingRoom>()
             };
@@ -178,7 +177,7 @@ namespace HotelApp.Data
                 CustomerInBooking = customer3,
                 StartDate = DateTime.Now.AddDays(3),
                 EndDate = DateTime.Now.AddDays(7),
-                NumberOfGuests = 5,
+                NumberOfGuests = 4,
                 IsCancelled = false,
                 ListOfBookingRoomsInBooking = new List<BookingRoom>()
             };
@@ -190,7 +189,7 @@ namespace HotelApp.Data
                 CustomerInBooking = customer4,
                 StartDate = DateTime.Now.AddDays(4),
                 EndDate = DateTime.Now.AddDays(8),
-                NumberOfGuests = 6, // Valid for room4
+                NumberOfGuests = 4,
                 IsCancelled = false,
                 ListOfBookingRoomsInBooking = new List<BookingRoom>()
             };
@@ -303,55 +302,5 @@ namespace HotelApp.Data
             _dbContext.BookingRooms.AddRange(new[] { bookingRoom1, bookingRoom2, bookingRoom3, bookingRoom4 });
             _dbContext.SaveChanges();
         }
-
-
-
-        private void LinkRelationships()
-        {
-            // Hämta alla entiteter från databasen i minnet
-            var bookings = _dbContext.Bookings.ToList();
-            var customers = _dbContext.Customers.ToList();
-            var rooms = _dbContext.Rooms.ToList();
-            var bookingRooms = _dbContext.BookingRooms.ToList();
-            var invoices = _dbContext.Invoices.ToList();
-
-            // Länka BookingRooms till Room och Booking
-            foreach (var bookingRoom in bookingRooms)
-            {
-                var room = rooms.FirstOrDefault(r => r.Id == bookingRoom.RoomId);
-                var booking = bookings.FirstOrDefault(b => b.Id == bookingRoom.BookingId);
-
-                if (room != null)
-                {
-                    room.ListOfBookingRoomsInRoom.Add(bookingRoom);
-                }
-
-                if (booking != null)
-                {
-                    booking.ListOfBookingRoomsInBooking.Add(bookingRoom);
-                }
-            }
-
-            // Länka Bookings till Customers och Invoices
-            foreach (var booking in bookings)
-            {
-                var customer = customers.FirstOrDefault(c => c.Id == booking.CustomerId);
-                var invoice = invoices.FirstOrDefault(i => i.BookingId == booking.Id);
-
-                if (customer != null)
-                {
-                    customer.ListOfBookingsInCustomer.Add(booking);
-                    booking.CustomerInBooking = customer; // Koppla tillbaka till Booking
-                }
-
-                if (invoice != null)
-                {
-                    booking.InvoiceInBooking = invoice; // Koppla fakturan till bokningen
-                }
-            }
-
-            _dbContext.SaveChanges();
-        }
-
     }
 }

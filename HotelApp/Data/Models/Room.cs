@@ -9,7 +9,7 @@ namespace HotelApp.Data.Models
     }
     public class Room
     {
-        public int Id { get; set; } // sätt till private set
+        public int Id { get; set; }
         public required short RoomNumber { get; set; }
         public required BedSize RoomType { get; set; } = BedSize.Single;
         public byte NumberOfPossibleExtraBeds { get; set; } = 0;
