@@ -144,7 +144,7 @@ namespace HotelApp.Data
         {
             if (_dbContext.Bookings.Any())
                 return;
-            var customer1 = _dbContext.Customers.First(c => c.FirstName == "Anna");
+            var customer1 = _dbContext.Customers.First(c => c.FirstName == "Fia");
             var booking1 = new Booking
             {
                 CustomerId = customer1.Id,
@@ -157,7 +157,7 @@ namespace HotelApp.Data
                 ListOfBookingRoomsInBooking = new List<BookingRoom>()
             };
 
-            var customer2 = _dbContext.Customers.First(c => c.FirstName == "Erik");
+            var customer2 = _dbContext.Customers.First(c => c.FirstName == "Pelle");
             var booking2 = new Booking
             {
                 CustomerId = customer2.Id,
@@ -181,7 +181,7 @@ namespace HotelApp.Data
                 ListOfBookingRoomsInBooking = new List<BookingRoom>()
             };
 
-            var customer4 = _dbContext.Customers.First(c => c.FirstName == "Johan");
+            var customer4 = _dbContext.Customers.First(c => c.FirstName == "Kalle");
             var booking4 = new Booking
             {
                 CustomerId = customer4.Id,
@@ -201,7 +201,7 @@ namespace HotelApp.Data
         {
             if (_dbContext.Invoices.Any())
                 return;
-            var customer1 = _dbContext.Customers.First(c => c.FirstName == "Anna");
+            var customer1 = _dbContext.Customers.First(c => c.FirstName == "Fia");
             var booking1 = _dbContext.Bookings.FirstOrDefault(b => b.CustomerId == customer1.Id);
             var invoice1 = new Invoice
             {
@@ -214,7 +214,7 @@ namespace HotelApp.Data
                 IsPaid = true
             };
 
-            var customer2 = _dbContext.Customers.First(c => c.FirstName == "Erik");
+            var customer2 = _dbContext.Customers.First(c => c.FirstName == "Pelle");
             var booking2 = _dbContext.Bookings.FirstOrDefault(b => b.CustomerId == customer2.Id);
             var invoice2 = new Invoice
             {
@@ -240,7 +240,7 @@ namespace HotelApp.Data
                 IsPaid = false
             };
 
-            var customer4 = _dbContext.Customers.First(c => c.FirstName == "Johan");
+            var customer4 = _dbContext.Customers.First(c => c.FirstName == "Kalle");
             var booking4 = _dbContext.Bookings.FirstOrDefault(b => b.CustomerId == customer4.Id);
             var invoice4 = new Invoice
             {
